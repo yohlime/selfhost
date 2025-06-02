@@ -13,3 +13,5 @@ This repository contains the Docker Compose configuration for my home server.
 - **Photoprism:** AI-powered photo management solution for browsing, organizing, and sharing photos.
 - **Vaultwarden:** Lightweight Bitwarden-compatible password manager.
 - **Uptime Kuma:** Self-hosted uptime monitoring tool.
+- **OpenWebUI:** A web UI for interacting with large language models.
+- **LiteLLM:** A unified interface for calling different LLMs.

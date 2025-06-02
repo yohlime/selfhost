@@ -47,6 +47,20 @@ photos.{$DOMAIN} {
   import custom_tls
 }
 
+chatai.{$DOMAIN} {
+  reverse_proxy open-webui:8080
+
+  import default
+  import custom_tls
+}
+
+litellm.{$DOMAIN} {
+  reverse_proxy litellm:4000
+
+  import default
+  import custom_tls
+}
+
 vw.{$DOMAIN} {
   reverse_proxy vaultwarden:80 {
     header_up X-Real-IP {remote_host}
