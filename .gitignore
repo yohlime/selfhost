@@ -1,0 +1,6 @@
+*
+
+!.gitignore
+!README.md
+!docker-compose.yaml
+!caddy.Dockerfile

@@ -1,0 +1,85 @@
+(custom_tls) {
+  tls {
+    dns cloudflare {$CF_API_TOKEN}
+    resolvers 1.1.1.1
+  }
+}
+
+(default) {
+  log {
+    level INFO
+    output file {$LOG_FILE} {
+      roll_size 10MB
+      roll_keep 10
+    }
+  }
+
+  encode zstd gzip
+}
+
+{$DOMAIN} {
+    reverse_proxy homer:8080
+
+    import default
+    import custom_tls 
+}
+
+pihole.{$DOMAIN} {
+  reverse_proxy pihole:80
+
+  import default
+  import custom_tls
+}
+
+sync.{$DOMAIN} {
+  reverse_proxy syncthing:8384 {
+    header_up Host {upstream_hostport}
+  }
+
+  import default
+  import custom_tls 
+}
+
+photos.{$DOMAIN} {
+  reverse_proxy photoprism:2342
+
+  import default
+  import custom_tls
+}
+
+vw.{$DOMAIN} {
+  reverse_proxy vaultwarden:80 {
+    header_up X-Real-IP {remote_host}
+  }
+
+  import default
+  import custom_tls
+}
+
+status.{$DOMAIN} {
+  reverse_proxy uptime-kuma:3001
+
+  import default
+  import custom_tls 
+}
+
+webdav.{$DOMAIN} {
+  basicauth * {
+    yoh268 $2y$05$aGDdyUrV6sZK2jJXYYMbq.2A2OctRr0KwOfTt2B8jsvBIbn57/UaG
+  }
+
+  root * /webdav
+  
+  @get method GET
+  route {
+    file_server @get {
+      hide .git .gitignore .stfolder .stversions
+      browse
+    }
+
+    webdav
+  }
+
+  import default
+  import custom_tls
+}

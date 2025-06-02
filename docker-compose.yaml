@@ -1,0 +1,174 @@
+x-common-environment: &common-env
+  TZ:
+
+services:
+  caddy:
+    build:
+      context: .
+      dockerfile: caddy.Dockerfile
+    container_name: caddy
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-config:/config
+      - ./caddy-data:/data
+      - ./webdav:/webdav
+    environment:
+      <<: *common-env
+      PUID: 1000
+      PGID: 1000
+      CADDY_INGRESS_NETWORKS: yohnet
+      EMAIL: emiliogozo@proton.me
+      LOG_FILE: /data/access.log
+      DOMAIN:
+      CF_API_TOKEN:
+
+  homer:
+    image: b4bz/homer
+    container_name: homer
+    restart: unless-stopped
+    networks:
+      - yohnet
+    volumes:
+      - ./homer:/www/assets
+    environment:
+      <<: *common-env
+
+  mariadb:
+    restart: unless-stopped
+    image: mariadb:11
+    container_name: mariadb
+    networks:
+      - yohnet
+    ports:
+      - 3306:3306
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    command: --innodb-buffer-pool-size=1G >
+      --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci --max-connections=512
+      --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    volumes:
+      - "./database:/var/lib/mysql"
+    environment:
+      <<: *common-env
+      MARIADB_AUTO_UPGRADE: "1"
+      MARIADB_INITDB_SKIP_TZINFO: "1"
+      MARIADB_DATABASE:
+      MARIADB_USER:
+      MARIADB_PASSWORD:
+      MARIADB_ROOT_PASSWORD:
+
+  pihole:
+    container_name: pihole
+    image: mpgirro/pihole-unbound:latest
+    hostname: pihole
+    networks:
+      - yohnet
+    ports:
+      - ${PH_WEBPORT_SSL:-443}:443/tcp
+      - 53:53/tcp
+      - 53:53/udp
+      - ${PH_WEBPORT:-80}:80/tcp
+      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
+      # - 22/tcp # Uncomment to enable SSH
+    environment:
+      <<: *common-env
+      FTLCONF_LOCAL_IPV4:
+      VIRTUAL_HOST: ${PH_VIRTUAL_HOST}
+      FTLCONF_webserver_api_password: ${PH_WEB_PASSWORD}
+      FTLCONF_webserver_interface_theme: ${PH_WEB_THEME:-default-light}
+      FTLCONF_dns_revServers: ${REV_SERVER:-false},${REV_SERVER_CIDR},${REV_SERVER_TARGET},${REV_SERVER_DOMAIN}
+      FTLCONF_dns_upstreams: 127.0.0.1#5335
+      FTLCONF_dns_dnssec: "true"
+      FTLCONF_dns_listeningMode: "all"
+    volumes:
+      - ./pihole/pihole:/etc/pihole:rw
+      - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
+    restart: unless-stopped
+
+  syncthing:
+    image: syncthing/syncthing
+    container_name: syncthing
+    hostname: yohsync
+    environment:
+      <<: *common-env
+      PUID: 1000
+      PGID: 1000
+    networks:
+      - yohnet
+    volumes:
+      - ./st-sync:/var/syncthing
+    ports:
+      - 8384:8384 # Web UI
+      - 22000:22000/tcp # TCP file transfers
+      - 22000:22000/udp # QUIC file transfers
+      - 21027:21027/udp # Receive local discovery broadcasts
+    restart: unless-stopped
+
+  photoprism:
+    image: photoprism/photoprism:latest
+    container_name: photoprism
+    networks:
+      - yohnet
+    environment:
+      <<: *common-env
+      PHOTOPRISM_ADMIN_PASSWORD: "${PHOTOPRISM_ADMIN_PASSWORD}"
+      PHOTOPRISM_STORAGE_PATH: "/photoprism/storage"
+      PHOTOPRISM_ORIGINALS_PATH: "/photoprism/originals"
+      PHOTOPRISM_SITE_URL: "${PHOTOPRISM_SITE_URL}"
+      PHOTOPRISM_DATABASE_DRIVER: "mysql"
+      PHOTOPRISM_DATABASE_SERVER: "mariadb:3306"
+      PHOTOPRISM_DATABASE_NAME: "photoprism"
+      PHOTOPRISM_DATABASE_USER: "${MARIADB_USER}"
+      PHOTOPRISM_DATABASE_PASSWORD: "${MARIADB_PASSWORD}"
+    volumes:
+      - ./photoprism/storage:/photoprism/storage
+      - ./st-sync/photos:/photoprism/originals
+      - ./st-sync/imports/photos:/photoprism/import
+    ports:
+      - "2342:2342"
+    restart: unless-stopped
+    depends_on:
+      - syncthing
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    depends_on:
+      - mariadb
+    environment:
+      <<: *common-env
+      DOMAIN: ${VW_DOMAIN}
+      WEBSOCKET_ENABLED: true
+      DATABASE_URL: ${VW_DB_URL}
+      ENABLE_DB_WAL: false
+    volumes:
+      - ./vw:/data
+    restart: unless-stopped
+    networks:
+      - yohnet
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 3001:3001
+    environment:
+      <<: *common-env
+    volumes:
+      - ./uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  yohnet:
