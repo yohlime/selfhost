@@ -169,16 +169,17 @@ services:
     volumes:
       - ./open-webui:/app/backend/data
 
-  litellm-db:
+  postgres:
     image: postgres:16
-    container_name: litellm_db
+    container_name: postgres
     restart: always
     environment:
-      POSTGRES_DB: ${LITELLM_DB_NAME}
-      POSTGRES_USER: ${LITELLM_DB_USER}
-      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD}
+      <<: *common-env
+      POSTGRES_DB:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
     volumes:
-      - ./litellm/db/data:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
     networks:
       - yohnet
 
@@ -186,7 +187,7 @@ services:
     image: ghcr.io/berriai/litellm-database:main-latest
     container_name: litellm
     depends_on:
-      - litellm-db
+      - postgres
     restart: always
     networks:
       - yohnet
@@ -196,12 +197,46 @@ services:
       - ./litellm/config.yaml:/app/config.yaml:Z
     environment:
       <<: *common-env
-      DATABASE_URL: postgresql://${LITELLM_DB_USER}:${LITELLM_DB_PASSWORD}@litellm-db:5432/${LITELLM_DB_NAME}?sslmode=disable
+      DATABASE_URL: postgresql://${LITELLM_DB_USER}:${LITELLM_DB_PASSWORD}@postgres:5432/${LITELLM_DB_NAME}?sslmode=disable
       LITELLM_MASTER_KEY:
       LITELLM_SALT_KEY:
       GROQ_API_KEY:
       GEMINI_API_KEY:
     command: --config /app/config.yaml
+
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: linkwarden
+    env_file: .env
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${LW_DB_NAME}?sslmode=disable
+      CUSTOM_OPENAI_BASE_URL: ${LW_CUSTOM_OPENAI_BASE_URL}
+      OPENAI_MODEL: ${LW_OPENAI_MODEL}
+      OPENAI_API_KEY: ${LW_OPENAI_API_KEY}
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 3333:3000
+    volumes:
+      - ./lw_data:/data/data
+    depends_on:
+      - postgres
+      - meilisearch
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.8
+    container_name: meilisearch
+    restart: always
+    networks:
+      - yohnet
+    env_file:
+      - .env
+    environment:
+      <<: *common-env
+    volumes:
+      - ./meili_data:/meili_data
 
   uptime-kuma:
     image: louislam/uptime-kuma:1

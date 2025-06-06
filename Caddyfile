@@ -70,6 +70,13 @@ vw.{$DOMAIN} {
   import custom_tls
 }
 
+lw.{$DOMAIN} {
+  reverse_proxy linkwarden:3000
+
+  import default
+  import custom_tls
+}
+
 status.{$DOMAIN} {
   reverse_proxy uptime-kuma:3001
 
