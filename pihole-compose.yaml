@@ -1,0 +1,24 @@
+services:
+  pihole:
+    container_name: pihole
+    image: mpgirro/pihole-unbound:latest
+    hostname: pihole
+    networks:
+      - yohnet
+    ports:
+      - ${PIHOLE_WEBPORT_SSL:-443}:443/tcp
+      - 53:53/tcp
+      - 53:53/udp
+      - ${PIHOLE_WEBPORT:-80}:80/tcp
+      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
+      # - 22/tcp # Uncomment to enable SSH
+    env_file:
+      - pihole/.env
+      - .env
+    environment:
+      FTLCONF_dns_dnssec: "true"
+      FTLCONF_dns_listeningMode: "all"
+    volumes:
+      - ./pihole/pihole:/etc/pihole:rw
+      - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
+    restart: unless-stopped

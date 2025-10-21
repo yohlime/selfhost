@@ -2,6 +2,7 @@ x-common-environment: &common-env
   TZ:
 
 include:
+  - pihole-compose.yaml
   - aiostreams-compose.yaml
 
 services:
@@ -68,34 +69,6 @@ services:
       MARIADB_USER:
       MARIADB_PASSWORD:
       MARIADB_ROOT_PASSWORD:
-
-  pihole:
-    container_name: pihole
-    image: mpgirro/pihole-unbound:latest
-    hostname: pihole
-    networks:
-      - yohnet
-    ports:
-      - ${PH_WEBPORT_SSL:-443}:443/tcp
-      - 53:53/tcp
-      - 53:53/udp
-      - ${PH_WEBPORT:-80}:80/tcp
-      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
-      # - 22/tcp # Uncomment to enable SSH
-    environment:
-      <<: *common-env
-      FTLCONF_LOCAL_IPV4:
-      VIRTUAL_HOST: ${PH_VIRTUAL_HOST}
-      FTLCONF_webserver_api_password: ${PH_WEB_PASSWORD}
-      FTLCONF_webserver_interface_theme: ${PH_WEB_THEME:-default-light}
-      FTLCONF_dns_revServers: ${REV_SERVER:-false},${REV_SERVER_CIDR},${REV_SERVER_TARGET},${REV_SERVER_DOMAIN}
-      FTLCONF_dns_upstreams: 127.0.0.1#5335
-      FTLCONF_dns_dnssec: "true"
-      FTLCONF_dns_listeningMode: "all"
-    volumes:
-      - ./pihole/pihole:/etc/pihole:rw
-      - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
-    restart: unless-stopped
 
   syncthing:
     image: syncthing/syncthing
