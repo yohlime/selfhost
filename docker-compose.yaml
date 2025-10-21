@@ -4,6 +4,7 @@ x-common-environment: &common-env
 include:
   - pihole-compose.yaml
   - photoprism-compose.yaml
+  - vaultwarden-compose.yaml
   - linkwarden-compose.yaml
   - litellm-compose.yaml
   - aiostreams-compose.yaml
@@ -91,35 +92,6 @@ services:
       - 22000:22000/udp # QUIC file transfers
       - 21027:21027/udp # Receive local discovery broadcasts
     restart: unless-stopped
-
-  vaultwarden:
-    image: vaultwarden/server:latest
-    container_name: vaultwarden
-    depends_on:
-      - postgres
-    environment:
-      <<: *common-env
-      DOMAIN: ${VW_DOMAIN}
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${VW_DB_NAME}?sslmode=disable
-      ENABLE_DB_WAL: false
-      ADMIN_TOKEN: ${VW_ADMIN_TOKEN}
-      WEBSOCKET_ENABLED: true
-      PUSH_ENABLED: true
-      PUSH_INSTALLATION_ID: ${VW_PUSH_INSTALLATION_ID}
-      PUSH_INSTALLATION_KEY: ${VW_PUSH_INSTALLATION_KEY}
-      PUSH_RELAY_URI: https://api.bitwarden.eu
-      PUSH_IDENTITY_URI: https://identity.bitwarden.eu
-      SMTP_HOST:
-      SMTP_PORT:
-      SMTP_SECURITY:
-      SMTP_FROM:
-      SMTP_USERNAME:
-      SMTP_PASSWORD:
-    volumes:
-      - ./vw:/data
-    restart: unless-stopped
-    networks:
-      - yohnet
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:main

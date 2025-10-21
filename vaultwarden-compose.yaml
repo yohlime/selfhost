@@ -1,0 +1,22 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    depends_on:
+      - postgres
+    env_file:
+      - vaultwarden/.env
+      - .env
+    environment:
+      DOMAIN: ${VW_DOMAIN}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/vaultwarden?sslmode=disable
+      ENABLE_DB_WAL: false
+      WEBSOCKET_ENABLED: true
+      PUSH_ENABLED: true
+      PUSH_RELAY_URI: https://api.bitwarden.eu
+      PUSH_IDENTITY_URI: https://identity.bitwarden.eu
+    volumes:
+      - ./vaultwarden/data:/data
+    restart: unless-stopped
+    networks:
+      - yohnet
