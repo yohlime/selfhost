@@ -61,6 +61,13 @@ litellm.{$DOMAIN} {
   import custom_tls
 }
 
+aiostreams.{$DOMAIN} {
+  reverse_proxy aiostreams:3000
+
+  import default
+  import custom_tls
+}
+
 vw.{$DOMAIN} {
   reverse_proxy vaultwarden:80 {
     header_up X-Real-IP {remote_host}

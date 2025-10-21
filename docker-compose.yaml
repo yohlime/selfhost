@@ -1,6 +1,9 @@
 x-common-environment: &common-env
   TZ:
 
+include:
+  - aiostreams-compose.yaml
+
 services:
   caddy:
     build:
@@ -56,7 +59,7 @@ services:
       --collation-server=utf8mb4_unicode_ci --max-connections=512
       --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
     volumes:
-      - "./database:/var/lib/mysql"
+      - "./mariadb:/var/lib/mysql"
     environment:
       <<: *common-env
       MARIADB_AUTO_UPGRADE: "1"
@@ -143,13 +146,25 @@ services:
     image: vaultwarden/server:latest
     container_name: vaultwarden
     depends_on:
-      - mariadb
+      - postgres
     environment:
       <<: *common-env
       DOMAIN: ${VW_DOMAIN}
-      WEBSOCKET_ENABLED: true
-      DATABASE_URL: ${VW_DB_URL}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${VW_DB_NAME}?sslmode=disable
       ENABLE_DB_WAL: false
+      ADMIN_TOKEN: ${VW_ADMIN_TOKEN}
+      WEBSOCKET_ENABLED: true
+      PUSH_ENABLED: true
+      PUSH_INSTALLATION_ID: ${VW_PUSH_INSTALLATION_ID}
+      PUSH_INSTALLATION_KEY: ${VW_PUSH_INSTALLATION_KEY}
+      PUSH_RELAY_URI: https://api.bitwarden.eu
+      PUSH_IDENTITY_URI: https://identity.bitwarden.eu
+      SMTP_HOST:
+      SMTP_PORT:
+      SMTP_SECURITY:
+      SMTP_FROM:
+      SMTP_USERNAME:
+      SMTP_PASSWORD:
     volumes:
       - ./vw:/data
     restart: unless-stopped
@@ -184,7 +199,7 @@ services:
       - yohnet
 
   litellm:
-    image: ghcr.io/berriai/litellm-database:main-latest
+    image: ghcr.io/berriai/litellm-database:main-stable
     container_name: litellm
     depends_on:
       - postgres
@@ -197,7 +212,7 @@ services:
       - ./litellm/config.yaml:/app/config.yaml:Z
     environment:
       <<: *common-env
-      DATABASE_URL: postgresql://${LITELLM_DB_USER}:${LITELLM_DB_PASSWORD}@postgres:5432/${LITELLM_DB_NAME}?sslmode=disable
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${LITELLM_DB_NAME}?sslmode=disable
       LITELLM_MASTER_KEY:
       LITELLM_SALT_KEY:
       GROQ_API_KEY:

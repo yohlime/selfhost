@@ -1,0 +1,24 @@
+services:
+  aiostreams:
+    image: ghcr.io/viren070/aiostreams:latest
+    container_name: aiostreams
+    restart: unless-stopped
+    ports:
+      - 3030:3000
+    networks:
+      - yohnet
+    env_file:
+      - aiostreams/.env.aiostreams
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aiostreams?sslmode=disable
+    volumes:
+      - ./aiostreams/data:/app/data
+    healthcheck:
+      test: wget -qO- http://localhost:3030/api/v1/status
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+
