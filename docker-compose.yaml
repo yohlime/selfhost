@@ -3,6 +3,7 @@ x-common-environment: &common-env
 
 include:
   - pihole-compose.yaml
+  - linkwarden-compose.yaml
   - aiostreams-compose.yaml
 
 services:
@@ -191,40 +192,6 @@ services:
       GROQ_API_KEY:
       GEMINI_API_KEY:
     command: --config /app/config.yaml
-
-  linkwarden:
-    image: ghcr.io/linkwarden/linkwarden:latest
-    container_name: linkwarden
-    env_file: .env
-    environment:
-      <<: *common-env
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${LW_DB_NAME}?sslmode=disable
-      CUSTOM_OPENAI_BASE_URL: ${LW_CUSTOM_OPENAI_BASE_URL}
-      OPENAI_MODEL: ${LW_OPENAI_MODEL}
-      OPENAI_API_KEY: ${LW_OPENAI_API_KEY}
-    restart: always
-    networks:
-      - yohnet
-    ports:
-      - 3333:3000
-    volumes:
-      - ./lw_data:/data/data
-    depends_on:
-      - postgres
-      - meilisearch
-
-  meilisearch:
-    image: getmeili/meilisearch:v1.12.8
-    container_name: meilisearch
-    restart: always
-    networks:
-      - yohnet
-    env_file:
-      - .env
-    environment:
-      <<: *common-env
-    volumes:
-      - ./meili_data:/meili_data
 
   uptime-kuma:
     image: louislam/uptime-kuma:1

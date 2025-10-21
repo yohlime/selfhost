@@ -1,0 +1,30 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:latest
+    container_name: linkwarden
+    env_file:
+      - linkwarden/.env
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/linkwarden?sslmode=disable
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 3333:3000
+    volumes:
+      - ./linkwarden/data:/data/data
+    depends_on:
+      - postgres
+      - meilisearch
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.8
+    container_name: meilisearch
+    restart: always
+    networks:
+      - yohnet
+    env_file:
+      - .env
+    volumes:
+      - ./meili_data:/meili_data
