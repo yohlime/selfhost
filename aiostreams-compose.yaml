@@ -8,7 +8,7 @@ services:
     networks:
       - yohnet
     env_file:
-      - aiostreams/.env.aiostreams
+      - aiostreams/.env
       - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aiostreams?sslmode=disable
@@ -20,5 +20,3 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
-
-
