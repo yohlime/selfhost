@@ -1,0 +1,19 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm-database:main-stable
+    container_name: litellm
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 4000:4000
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:Z
+    env_file:
+      - litellm/.env
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/litellm?sslmode=disable
+    command: --config /app/config.yaml
