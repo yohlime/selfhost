@@ -1,0 +1,9 @@
+services:
+  vert:
+    container_name: vert
+    image: ghcr.io/vert-sh/vert:latest
+    restart: unless-stopped
+    ports:
+      - 9000:80
+    networks:
+      - yohnet

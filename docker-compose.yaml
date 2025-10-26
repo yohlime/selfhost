@@ -11,6 +11,7 @@ include:
   - litellm-compose.yaml
   - open-webui-compose.yaml
   - aiostreams-compose.yaml
+  - vert-compose.yaml
 
 services:
   caddy:

@@ -80,6 +80,13 @@ aiostreams.{$DOMAIN} {
   import custom_tls
 }
 
+vert.{$DOMAIN} {
+  reverse_proxy vert:80
+
+  import default
+  import custom_tls
+}
+
 vw.{$DOMAIN} {
   reverse_proxy vaultwarden:80 {
     header_up X-Real-IP {remote_host}
