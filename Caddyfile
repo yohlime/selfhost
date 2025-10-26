@@ -40,8 +40,28 @@ sync.{$DOMAIN} {
   import custom_tls 
 }
 
-photos.{$DOMAIN} {
+photoprism.{$DOMAIN} {
   reverse_proxy photoprism:2342
+
+  import default
+  import custom_tls
+}
+
+photos.{$DOMAIN} {
+  reverse_proxy immich-server:2283
+    reverse_proxy / ws://immich-server:2283 {
+    header_up Host {host}
+    header_up X-Real-IP {remote}
+    header_up X-Forwarded-For {remote}
+    header_up X-Forwarded-Proto {scheme}
+  }
+
+  reverse_proxy immich-server:2283 {
+    header_up Host {host}
+    header_up X-Real-IP {remote}
+    header_up X-Forwarded-For {remote}
+    header_up X-Forwarded-Proto {scheme}
+  }
 
   import default
   import custom_tls

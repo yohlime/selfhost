@@ -5,6 +5,7 @@ include:
   - pihole-compose.yaml
   - syncthing-compose.yaml
   - photoprism-compose.yaml
+  - immich-compose.yaml
   - vaultwarden-compose.yaml
   - linkwarden-compose.yaml
   - litellm-compose.yaml
