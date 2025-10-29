@@ -23,4 +23,5 @@ services:
       - "2342:2342"
     restart: unless-stopped
     depends_on:
+      - mariadb
       - syncthing
