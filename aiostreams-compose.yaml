@@ -14,9 +14,22 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/aiostreams?sslmode=disable
     volumes:
       - ./aiostreams/data:/app/data
+    depends_on:
+      - mediaflow-proxy
     healthcheck:
       test: wget -qO- http://localhost:3030/api/v1/status
       interval: 1m
       timeout: 10s
       retries: 5
       start_period: 10s
+  mediaflow-proxy:
+    image: "mhdzumair/mediaflow-proxy:latest"
+    container_name: mediaflow_proxy
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - aiostreams/.env.mediaflow
+      - .env
+    environment:
+      API_PASSWORD: ${MEDIAFLOW_API_PASSWORD}
