@@ -59,6 +59,13 @@ photos.{$DOMAIN} {
   import custom_tls
 }
 
+dawarich.{$DOMAIN} {
+  reverse_proxy dawarich-app:3000
+
+  import default
+  import custom_tls
+}
+
 chatai.{$DOMAIN} {
   reverse_proxy open-webui:8080
 

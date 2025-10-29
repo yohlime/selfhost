@@ -12,6 +12,7 @@ include:
   - open-webui-compose.yaml
   - aiostreams-compose.yaml
   - vert-compose.yaml
+  - dawarich-compose.yaml
 
 services:
   caddy:
