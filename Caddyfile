@@ -87,6 +87,13 @@ aiostreams.{$DOMAIN} {
   import custom_tls
 }
 
+yamtrack.{$DOMAIN} {
+  reverse_proxy yamtrack:8000
+
+  import default
+  import custom_tls
+}
+
 streamproxy.{$DOMAIN} {
   reverse_proxy mediaflow-proxy:8888 {
     header_up Host {host}

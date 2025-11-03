@@ -1,0 +1,35 @@
+services:
+  yamtrack:
+    container_name: yamtrack
+    image: ghcr.io/fuzzygrim/yamtrack
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - yamtrack-redis
+    env_file:
+      - .env
+    environment:
+      SECRET: ${YAMTRACK_SECRET}
+      URLS: "https://yamtrack.home.yohli.me"
+      REDIS_URL: redis://yamtrack-redis:6379
+      DB_HOST: postgres
+      DB_NAME: yamtrack
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PORT: 5432
+    ports:
+      - "8888:8000"
+    networks:
+      - yohnet
+
+  yamtrack-redis:
+    container_name: yamtrack_redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - yamtrack_redis:/data
+    networks:
+      - yohnet
+
+volumes:
+  yamtrack_redis:

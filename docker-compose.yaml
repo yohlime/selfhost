@@ -13,6 +13,7 @@ include:
   - aiostreams-compose.yaml
   - vert-compose.yaml
   - dawarich-compose.yaml
+  - yamtrack-compose.yaml
 
 services:
   caddy:
