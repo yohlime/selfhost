@@ -31,6 +31,13 @@ pihole.{$DOMAIN} {
   import custom_tls
 }
 
+notify.{$DOMAIN} {
+  reverse_proxy gotify:80
+
+  import default
+  import custom_tls
+}
+
 sync.{$DOMAIN} {
   reverse_proxy syncthing:8384 {
     header_up Host {upstream_hostport}

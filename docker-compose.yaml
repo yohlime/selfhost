@@ -3,6 +3,7 @@ x-common-environment: &common-env
 
 include:
   - pihole-compose.yaml
+  - gotify-compose.yaml
   - syncthing-compose.yaml
   - photoprism-compose.yaml
   - immich-compose.yaml
