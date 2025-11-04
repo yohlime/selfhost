@@ -101,18 +101,6 @@ yamtrack.{$DOMAIN} {
   import custom_tls
 }
 
-streamproxy.{$DOMAIN} {
-  reverse_proxy mediaflow-proxy:8888 {
-    header_up Host {host}
-    header_up X-Real-IP {remote}
-    header_up X-Forwarded-For {remote}
-    header_up X-Forwarded-Proto {scheme}
-  }
-
-  import default
-  import custom_tls
-}
-
 vert.{$DOMAIN} {
   reverse_proxy vert:80
 
