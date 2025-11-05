@@ -24,37 +24,32 @@ services:
       dockerfile: caddy.Dockerfile
     container_name: caddy
     restart: always
-    networks:
-      - yohnet
-    ports:
-      - 80:80
-      - 443:443
-      - 443:443/udp
+    network_mode: "host"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./caddy-config:/config
       - ./caddy-data:/data
       - ./webdav:/webdav
+    env_file:
+      - .env
     environment:
-      <<: *common-env
       PUID: 1000
       PGID: 1000
-      CADDY_INGRESS_NETWORKS: yohnet
       EMAIL: emiliogozo@proton.me
       LOG_FILE: /data/access.log
-      DOMAIN:
-      CF_API_TOKEN:
 
   homer:
     image: b4bz/homer
     container_name: homer
     restart: unless-stopped
+    ports:
+      - 8088:8080
     networks:
       - yohnet
     volumes:
       - ./homer:/www/assets
-    environment:
-      <<: *common-env
+    env_file:
+      - .env
 
   mariadb:
     restart: unless-stopped
@@ -62,8 +57,6 @@ services:
     container_name: mariadb
     networks:
       - yohnet
-    ports:
-      - 3306:3306
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined
@@ -73,24 +66,18 @@ services:
       --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
     volumes:
       - "./mariadb:/var/lib/mysql"
+    env_file:
+      - .env
     environment:
-      <<: *common-env
       MARIADB_AUTO_UPGRADE: "1"
       MARIADB_INITDB_SKIP_TZINFO: "1"
-      MARIADB_DATABASE:
-      MARIADB_USER:
-      MARIADB_PASSWORD:
-      MARIADB_ROOT_PASSWORD:
 
   postgres:
     image: postgres:16
     container_name: postgres
     restart: always
-    environment:
-      <<: *common-env
-      POSTGRES_DB:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
+    env_file:
+      - .env
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     networks:
@@ -104,8 +91,8 @@ services:
       - yohnet
     ports:
       - 3001:3001
-    environment:
-      <<: *common-env
+    env_file:
+      - .env
     volumes:
       - ./uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock

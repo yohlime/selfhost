@@ -18,5 +18,7 @@ services:
     volumes:
       - ./vaultwarden/data:/data
     restart: unless-stopped
+    ports:
+      - 9999:80
     networks:
       - yohnet

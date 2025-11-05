@@ -2,16 +2,15 @@ services:
   pihole:
     container_name: pihole
     image: mpgirro/pihole-unbound:latest
+    cap_add:
+      - NET_BIND_SERVICE # To allow binding to ports < 1024 (e.g., DNS port 53)
+      - NET_RAW # To handle raw sockets needed for DHCPv6 and IP verification
+      - NET_ADMIN # To modify routing tables and network operations
+      - SYS_NICE # To set higher priority for FTL process
+      - CHOWN # To change ownership of files if needed
+      - SYS_TIME # To set system time if required by FTL
     hostname: pihole
-    networks:
-      - yohnet
-    ports:
-      - ${PIHOLE_WEBPORT_SSL:-443}:443/tcp
-      - 53:53/tcp
-      - 53:53/udp
-      - ${PIHOLE_WEBPORT:-80}:80/tcp
-      # - 5335:5335/tcp # Uncomment to enable unbound access on local server
-      # - 22/tcp # Uncomment to enable SSH
+    network_mode: "host"
     env_file:
       - pihole/.env
       - .env
