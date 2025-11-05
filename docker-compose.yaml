@@ -15,6 +15,7 @@ include:
   - vert-compose.yaml
   - dawarich-compose.yaml
   - yamtrack-compose.yaml
+  - postiz-compose.yaml
 
 services:
   caddy:
