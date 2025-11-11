@@ -5,6 +5,7 @@ include:
   - immich-compose.yaml
   - vaultwarden-compose.yaml
   - linkwarden-compose.yaml
+  - matrix-compose.yaml
   - litellm-compose.yaml
   - open-webui-compose.yaml
   - aiostreams-compose.yaml

@@ -1,0 +1,75 @@
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    networks:
+      - yohnet
+    env_file:
+      - synapse/.env
+      - .env
+    volumes:
+      - ./synapse/data:/data
+      - ./synapse/bridges:/data/bridges:Z
+    ports:
+      - 8008:8008
+    restart: unless-stopped
+    depends_on:
+      - postgres
+  mautrix-telegram:
+    container_name: mautrix-telegram
+    image: dock.mau.dev/mautrix/telegram:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./synapse/bridges/telegram:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse
+  mautrix-messenger:
+    container_name: mautrix-messenger
+    image: dock.mau.dev/mautrix/meta:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./synapse/bridges/messenger:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse
+  mautrix-instagram:
+    container_name: mautrix-instagram
+    image: dock.mau.dev/mautrix/meta:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./synapse/bridges/instagram:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse
+  mautrix-twitter:
+    container_name: mautrix-twitter
+    image: dock.mau.dev/mautrix/twitter:latest
+    restart: unless-stopped
+    volumes:
+      - ./synapse/bridges/twitter:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse
+  mautrix-bluesky:
+    container_name: mautrix-bluesky
+    image: dock.mau.dev/mautrix/bluesky:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./synapse/bridges/bluesky:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse

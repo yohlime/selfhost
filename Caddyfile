@@ -31,6 +31,14 @@ pihole.{$DOMAIN} {
   import custom_tls
 }
 
+matrix.{$DOMAIN} {
+  reverse_proxy /_matrix/* localhost:8008
+  reverse_proxy /_synapse/client/* localhost:8008
+
+  import default
+  import custom_tls
+}
+
 notify.{$DOMAIN} {
   reverse_proxy localhost:8040
 
