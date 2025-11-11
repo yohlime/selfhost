@@ -1,11 +1,7 @@
-x-common-environment: &common-env
-  TZ:
-
 include:
   - pihole-compose.yaml
   - gotify-compose.yaml
   - syncthing-compose.yaml
-  - photoprism-compose.yaml
   - immich-compose.yaml
   - vaultwarden-compose.yaml
   - linkwarden-compose.yaml
@@ -51,26 +47,26 @@ services:
     env_file:
       - .env
 
-  mariadb:
-    restart: unless-stopped
-    image: mariadb:11
-    container_name: mariadb
-    networks:
-      - yohnet
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
-    command: --innodb-buffer-pool-size=1G >
-      --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci --max-connections=512
-      --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
-    volumes:
-      - "./mariadb:/var/lib/mysql"
-    env_file:
-      - .env
-    environment:
-      MARIADB_AUTO_UPGRADE: "1"
-      MARIADB_INITDB_SKIP_TZINFO: "1"
+  # mariadb:
+  #   restart: unless-stopped
+  #   image: mariadb:11
+  #   container_name: mariadb
+  #   networks:
+  #     - yohnet
+  #   security_opt:
+  #     - seccomp:unconfined
+  #     - apparmor:unconfined
+  #   command: --innodb-buffer-pool-size=1G >
+  #     --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4
+  #     --collation-server=utf8mb4_unicode_ci --max-connections=512
+  #     --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+  #   volumes:
+  #     - "./mariadb:/var/lib/mysql"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     MARIADB_AUTO_UPGRADE: "1"
+  #     MARIADB_INITDB_SKIP_TZINFO: "1"
 
   postgres:
     image: postgres:16
