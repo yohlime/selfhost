@@ -1,6 +1,6 @@
 include:
   - pihole-compose.yaml
-  - gotify-compose.yaml
+  - ntfy-compose.yaml
   - syncthing-compose.yaml
   - immich-compose.yaml
   - vaultwarden-compose.yaml

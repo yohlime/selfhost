@@ -40,7 +40,16 @@ matrix.{$DOMAIN} {
 }
 
 notify.{$DOMAIN} {
-  reverse_proxy localhost:8040
+  reverse_proxy localhost:8044
+
+  # Redirect HTTP to HTTPS, but only for GET topic addresses, since we want
+  # it to work with curl without the annoying https:// prefix
+  @httpget {
+      protocol http
+      method GET
+      path_regexp ^/([-_a-z0-9]{0,64}$|docs/|static/)
+  }
+  redir @httpget https://{host}{uri}
 
   import default
   import custom_tls
