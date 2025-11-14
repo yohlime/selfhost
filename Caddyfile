@@ -118,13 +118,6 @@ yamtrack.{$DOMAIN} {
   import custom_tls
 }
 
-postiz.{$DOMAIN} {
-  reverse_proxy localhost:5000
-
-  import default
-  import custom_tls
-}
-
 vert.{$DOMAIN} {
   reverse_proxy localhost:9000
 
