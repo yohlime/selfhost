@@ -1,0 +1,77 @@
+services:
+  # postgresql:
+  #   env_file:
+  #   - .env
+  #   environment:
+  #     POSTGRES_DB: ${PG_DB:-authentik}
+  #     POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+  #     POSTGRES_USER: ${PG_USER:-authentik}
+  #   healthcheck:
+  #     interval: 30s
+  #     retries: 5
+  #     start_period: 20s
+  #     test:
+  #     - CMD-SHELL
+  #     - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+  #     timeout: 5s
+  #   image: docker.io/library/postgres:16-alpine
+  #   restart: unless-stopped
+  #   volumes:
+  #   - database:/var/lib/postgresql/data
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2025.10
+    container_name: authentik-server
+    command: server
+    depends_on:
+      - "postgres"
+    env_file:
+      - authentik/.env
+      - .env
+    environment:
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
+      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
+      AUTHENTIK_EMAIL__HOST: ${SMTP_HOST}
+      AUTHENTIK_EMAIL__PORT: ${SMTP_PORT}
+      AUTHENTIK_EMAIL__USERNAME: ${SMTP_USERNAME}
+      AUTHENTIK_EMAIL__PASSWORD: ${SMTP_PASSWORD}
+      AUTHENTIK_EMAIL__USE_TLS: true
+      AUTHENTIK_EMAIL__USE_SSL: false
+      AUTHENTIK_EMAIL__TIMEOUT: 10
+      AUTHENTIK_EMAIL__FROM: ${SMTP_FROM}
+    ports:
+      - 9080:9000
+    restart: unless-stopped
+    volumes:
+      - ./authentik/media:/media
+      - ./authentik/templates:/templates
+    networks:
+      - yohnet
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2025.10
+    container_name: authentik-worker
+    command: worker
+    depends_on:
+      - "postgres"
+    env_file:
+      - authentik/.env
+      - .env
+    environment:
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
+      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
+      AUTHENTIK_EMAIL__HOST: ${SMTP_HOST}
+      AUTHENTIK_EMAIL__PORT: ${SMTP_PORT}
+      AUTHENTIK_EMAIL__USERNAME: ${SMTP_USERNAME}
+      AUTHENTIK_EMAIL__PASSWORD: ${SMTP_PASSWORD}
+      AUTHENTIK_EMAIL__USE_TLS: true
+      AUTHENTIK_EMAIL__USE_SSL: false
+      AUTHENTIK_EMAIL__TIMEOUT: 10
+      AUTHENTIK_EMAIL__FROM: ${SMTP_FROM}
+    restart: unless-stopped
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./authentik/media:/media
+      - ./authentik/certs:/certs
+      - ./authentik/templates:/templates
+    networks:
+      - yohnet

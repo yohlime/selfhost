@@ -141,6 +141,13 @@ lw.{$DOMAIN} {
   import custom_tls
 }
 
+authentik.{$DOMAIN} {
+  reverse_proxy localhost:9080
+
+  import default
+  import custom_tls 
+}
+
 status.{$DOMAIN} {
   reverse_proxy localhost:3001
 

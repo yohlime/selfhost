@@ -12,6 +12,7 @@ include:
   - vert-compose.yaml
   - dawarich-compose.yaml
   - yamtrack-compose.yaml
+  - authentik-compose.yaml
 
 services:
   caddy:
