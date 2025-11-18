@@ -174,7 +174,7 @@ status.{$DOMAIN} {
 }
 
 webdav.{$DOMAIN} {
-  basicauth * {
+  basic_auth * {
     yoh268 $2y$05$aGDdyUrV6sZK2jJXYYMbq.2A2OctRr0KwOfTt2B8jsvBIbn57/UaG
   }
 
