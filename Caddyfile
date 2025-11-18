@@ -32,6 +32,10 @@ pihole.{$DOMAIN} {
 }
 
 matrix.{$DOMAIN} {
+  route /_matrix/client/*/voip/turnServer {
+    reverse_proxy http://localhost:4499
+  }
+
   reverse_proxy /_matrix/* localhost:8008
   reverse_proxy /_synapse/client/* localhost:8008
 

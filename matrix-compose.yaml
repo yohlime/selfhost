@@ -15,6 +15,24 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+  matrix-turnify:
+    image: ghcr.io/bpbradley/matrix-turnify:latest
+    container_name: matrix-turnify
+    restart: unless-stopped
+    networks:
+      - yohnet
+    ports:
+      - 4499:4499
+    env_file:
+      - synapse/.env.turnify
+      - .env
+    user: 1000:1000
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      - synapse
   mautrix-telegram:
     container_name: mautrix-telegram
     image: dock.mau.dev/mautrix/telegram:latest
