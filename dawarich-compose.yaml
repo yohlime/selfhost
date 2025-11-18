@@ -56,6 +56,7 @@ services:
     command: ["bin/rails", "server", "-p", "3000", "-b", "::"]
     restart: on-failure
     env_file:
+      - ./dawarich/.env
       - .env
     environment:
       RAILS_ENV: development
@@ -68,9 +69,6 @@ services:
       APPLICATION_HOSTS: "timeline.yohli.me,dawarich.home.yohli.me,localhost,127.0.0.1"
       TIME_ZONE: Asia/Manila
       APPLICATION_PROTOCOL: http
-      PROMETHEUS_EXPORTER_ENABLED: "false"
-      PROMETHEUS_EXPORTER_HOST: 0.0.0.0
-      PROMETHEUS_EXPORTER_PORT: 9394
       SELF_HOSTED: "true"
       STORE_GEODATA: "true"
     logging:
@@ -115,6 +113,7 @@ services:
     command: ["sidekiq"]
     restart: on-failure
     env_file:
+      - ./dawarich/.env
       - .env
     environment:
       RAILS_ENV: development
@@ -126,9 +125,6 @@ services:
       APPLICATION_HOSTS: "timeline.yohli.me,dawarich.home.yohli.me,localhost,127.0.0.1"
       BACKGROUND_PROCESSING_CONCURRENCY: 10
       APPLICATION_PROTOCOL: http
-      PROMETHEUS_EXPORTER_ENABLED: "false"
-      PROMETHEUS_EXPORTER_HOST: dawarich-app
-      PROMETHEUS_EXPORTER_PORT: 9394
       SELF_HOSTED: "true"
       STORE_GEODATA: "true"
     logging:
