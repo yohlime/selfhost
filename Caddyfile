@@ -130,7 +130,7 @@ aiostreams.{$DOMAIN} {
 }
 
 yamtrack.{$DOMAIN} {
-  reverse_proxy localhost:8888
+  reverse_proxy localhost:8000
 
   import default
   import custom_tls

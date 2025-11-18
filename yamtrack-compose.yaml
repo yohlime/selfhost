@@ -18,7 +18,7 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_PORT: 5432
     ports:
-      - "8888:8000"
+      - "8000:8000"
     networks:
       - yohnet
 
