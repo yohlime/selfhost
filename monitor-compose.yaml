@@ -1,0 +1,67 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 3001:3001
+    env_file:
+      - .env
+    volumes:
+      - ./uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+  cadvisor:
+    container_name: cadvisor
+    image: ghcr.io/google/cadvisor:v0.53.0
+    privileged: true
+    networks:
+      - yohnet
+    env_file:
+      - .env
+    volumes:
+      - "/:/rootfs"
+      - "/var/run:/var/run"
+      - "/sys:/sys"
+      - "/var/lib/docker/:/var/lib/docker"
+      - "/dev/disk/:/dev/disk"
+    devices:
+      - "/dev/kmsg"
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    networks:
+      - yohnet
+    ports:
+      - 9090:9090
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+    env_file:
+      - .env
+    volumes:
+      - ./prometheus/etc:/etc/prometheus
+      - ./prometheus/data:/prometheus
+    depends_on:
+      - cadvisor
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    restart: unless-stopped
+    user: "1000:1000"
+    env_file:
+      - .env
+    networks:
+      - yohnet
+    ports:
+      - "6000:3000"
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - prometheus

@@ -31,6 +31,20 @@ pihole.{$DOMAIN} {
   import custom_tls
 }
 
+prometheus.{$DOMAIN} {
+  reverse_proxy localhost:9090
+
+  import default
+  import custom_tls
+}
+
+grafana.{$DOMAIN} {
+  reverse_proxy localhost:6000
+
+  import default
+  import custom_tls
+}
+
 matrix.{$DOMAIN} {
   route /_matrix/client/*/voip/turnServer {
     reverse_proxy http://localhost:4499
