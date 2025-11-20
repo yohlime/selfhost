@@ -1,6 +1,5 @@
 include:
   - pihole-compose.yaml
-  - postfix-compose.yaml
   - ntfy-compose.yaml
   - monitor-compose.yaml
   - syncthing-compose.yaml
