@@ -1,10 +1,3 @@
-(custom_tls) {
-  tls {
-    dns cloudflare {$CF_API_TOKEN}
-    resolvers 1.1.1.1
-  }
-}
-
 (default) {
   log {
     level INFO
@@ -13,36 +6,28 @@
       roll_keep 10
     }
   }
+}
 
-  encode zstd gzip
+{
+  acme_dns cloudflare {$CF_API_TOKEN}
+
+  import default
 }
 
 {$DOMAIN} {
     reverse_proxy localhost:8088
-
-    import default
-    import custom_tls 
 }
 
 pihole.{$DOMAIN} {
   reverse_proxy localhost:8080
-
-  import default
-  import custom_tls
 }
 
 prometheus.{$DOMAIN} {
   reverse_proxy localhost:9090
-
-  import default
-  import custom_tls
 }
 
 grafana.{$DOMAIN} {
   reverse_proxy localhost:6000
-
-  import default
-  import custom_tls
 }
 
 matrix.{$DOMAIN} {
@@ -52,9 +37,6 @@ matrix.{$DOMAIN} {
 
   reverse_proxy /_matrix/* localhost:8008
   reverse_proxy /_synapse/client/* localhost:8008
-
-  import default
-  import custom_tls
 }
 
 notify.{$DOMAIN} {
@@ -68,109 +50,62 @@ notify.{$DOMAIN} {
       path_regexp ^/([-_a-z0-9]{0,64}$|docs/|static/)
   }
   redir @httpget https://{host}{uri}
-
-  import default
-  import custom_tls
 }
 
 sync.{$DOMAIN} {
   reverse_proxy localhost:8384 {
     header_up Host {upstream_hostport}
   }
-
-  import default
-  import custom_tls 
 }
 
 photoprism.{$DOMAIN} {
   reverse_proxy localhost:2342
-
-  import default
-  import custom_tls
 }
 
 photos.{$DOMAIN} {
-  reverse_proxy localhost:2283 {
-    header_up Host {host}
-    header_up X-Real-IP {remote}
-    header_up X-Forwarded-For {remote}
-    header_up X-Forwarded-Proto {scheme}
-  }
-
-  import default
-  import custom_tls
+  reverse_proxy localhost:2283 
 }
 
 dawarich.{$DOMAIN} {
   reverse_proxy localhost:3344
-
-  import default
-  import custom_tls
 }
 
 chatai.{$DOMAIN} {
   reverse_proxy localhost:3000
-
-  import default
-  import custom_tls
 }
 
 litellm.{$DOMAIN} {
   reverse_proxy localhost:4000
-
-  import default
-  import custom_tls
 }
 
 aiostreams.{$DOMAIN} {
   reverse_proxy localhost:3030
-
-  import default
-  import custom_tls
 }
 
 yamtrack.{$DOMAIN} {
   reverse_proxy localhost:8000
-
-  import default
-  import custom_tls
 }
 
 vert.{$DOMAIN} {
   reverse_proxy localhost:9000
-
-  import default
-  import custom_tls
 }
 
 vw.{$DOMAIN} {
   reverse_proxy localhost:9999 {
     header_up X-Real-IP {remote_host}
   }
-
-  import default
-  import custom_tls
 }
 
 lw.{$DOMAIN} {
   reverse_proxy localhost:3333
-
-  import default
-  import custom_tls
 }
 
 authentik.{$DOMAIN} {
   reverse_proxy localhost:9080
-
-  import default
-  import custom_tls 
 }
 
 status.{$DOMAIN} {
   reverse_proxy localhost:3001
-
-  import default
-  import custom_tls 
 }
 
 webdav.{$DOMAIN} {
@@ -189,7 +124,4 @@ webdav.{$DOMAIN} {
 
     webdav
   }
-
-  import default
-  import custom_tls
 }
