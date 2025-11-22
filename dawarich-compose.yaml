@@ -47,9 +47,6 @@ services:
       - ./dawarich/db:/dawarich_db_data
     networks:
       - yohnet
-    ports:
-      - 3344:3000
-      # - 9394:9394 # Prometheus exporter, uncomment if needed
     stdin_open: true
     tty: true
     entrypoint: web-entrypoint.sh

@@ -15,32 +15,32 @@
 }
 
 {$DOMAIN} {
-    reverse_proxy localhost:8088
+    reverse_proxy homer:8080
 }
 
 pihole.{$DOMAIN} {
-  reverse_proxy localhost:8080
+  reverse_proxy host.docker.internal:8080
 }
 
 prometheus.{$DOMAIN} {
-  reverse_proxy localhost:9090
+  reverse_proxy prometheus:9090
 }
 
 grafana.{$DOMAIN} {
-  reverse_proxy localhost:6000
+  reverse_proxy grafana:3000
 }
 
 matrix.{$DOMAIN} {
   route /_matrix/client/*/voip/turnServer {
-    reverse_proxy http://localhost:4499
+    reverse_proxy http://matrix-turnify:4499
   }
 
-  reverse_proxy /_matrix/* localhost:8008
-  reverse_proxy /_synapse/client/* localhost:8008
+  reverse_proxy /_matrix/* synapse:8008
+  reverse_proxy /_synapse/client/* synapse:8008
 }
 
 notify.{$DOMAIN} {
-  reverse_proxy localhost:8044
+  reverse_proxy ntfy:80
 
   # Redirect HTTP to HTTPS, but only for GET topic addresses, since we want
   # it to work with curl without the annoying https:// prefix
@@ -53,63 +53,59 @@ notify.{$DOMAIN} {
 }
 
 sync.{$DOMAIN} {
-  reverse_proxy localhost:8384 {
+  reverse_proxy syncthing:8384 {
     header_up Host {upstream_hostport}
   }
 }
 
-photoprism.{$DOMAIN} {
-  reverse_proxy localhost:2342
-}
-
 photos.{$DOMAIN} {
-  reverse_proxy localhost:2283 
+  reverse_proxy immich-server:2283 
 }
 
 dawarich.{$DOMAIN} {
-  reverse_proxy localhost:3344
+  reverse_proxy dawarich-app:3000
 }
 
 chatai.{$DOMAIN} {
-  reverse_proxy localhost:3000
+  reverse_proxy open-webui:8080
 }
 
 litellm.{$DOMAIN} {
-  reverse_proxy localhost:4000
+  reverse_proxy litellm:4000
 }
 
 aiostreams.{$DOMAIN} {
-  reverse_proxy localhost:3030
+  reverse_proxy aiostreams:3000
 }
 
 yamtrack.{$DOMAIN} {
-  reverse_proxy localhost:8000
+  reverse_proxy yamtrack:8000
 }
 
 vert.{$DOMAIN} {
-  reverse_proxy localhost:9000
+  reverse_proxy vert:80
 }
 
 vw.{$DOMAIN} {
-  reverse_proxy localhost:9999 {
+  reverse_proxy vaultwarden:80 {
     header_up X-Real-IP {remote_host}
   }
 }
 
 lw.{$DOMAIN} {
-  reverse_proxy localhost:3333
+  reverse_proxy linkwarden:3000
 }
 
 authentik.{$DOMAIN} {
-  reverse_proxy localhost:9080
+  reverse_proxy authentik-server:9000
 }
 
 status.{$DOMAIN} {
-  reverse_proxy localhost:3001
+  reverse_proxy uptime-kuma:3001
 }
 
 mediaflow-proxy.{$DOMAIN} {
-  reverse_proxy localhost:18888
+  reverse_proxy mediaflow-proxy:8888
 }
 
 webdav.{$DOMAIN} {

@@ -15,8 +15,6 @@ services:
     env_file:
       - ./immich/.env
       - .env
-    ports:
-      - 2283:2283
     depends_on:
       - immich-redis
       - immich-db

@@ -3,8 +3,6 @@ services:
     image: ghcr.io/viren070/aiostreams:latest
     container_name: aiostreams
     restart: unless-stopped
-    ports:
-      - 3030:3000
     networks:
       - yohnet
     env_file:
@@ -28,8 +26,6 @@ services:
     restart: unless-stopped
     networks:
       - yohnet
-    ports:
-      - 18888:8888
     env_file:
       - aiostreams/.env.mediaflow
       - .env

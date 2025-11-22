@@ -7,8 +7,6 @@ services:
     restart: always
     networks:
       - yohnet
-    ports:
-      - 4000:4000
     volumes:
       - ./litellm/config.yaml:/app/config.yaml:Z
     env_file:

@@ -10,8 +10,6 @@ services:
     volumes:
       - ./ntfy/cache:/var/cache/ntfy
       - ./ntfy/etc:/etc/ntfy
-    ports:
-      - 8044:80
     healthcheck: # optional: remember to adapt the host:port to your environment
       test:
         [

@@ -4,14 +4,14 @@ services:
     container_name: synapse
     networks:
       - yohnet
+    ports:
+      - 8008:8008
     env_file:
       - synapse/.env
       - .env
     volumes:
       - ./synapse/data:/data
       - ./synapse/bridges:/data/bridges:Z
-    ports:
-      - 8008:8008
     restart: unless-stopped
     depends_on:
       - postgres
@@ -21,8 +21,6 @@ services:
     restart: unless-stopped
     networks:
       - yohnet
-    ports:
-      - 4499:4499
     env_file:
       - synapse/.env.turnify
       - .env

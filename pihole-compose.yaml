@@ -17,6 +17,7 @@ services:
     environment:
       FTLCONF_dns_dnssec: "true"
       FTLCONF_dns_listeningMode: "all"
+      VIRTUAL_HOST: "pihole.$DOMAIN"
     volumes:
       - ./pihole/pihole:/etc/pihole:rw
       - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
