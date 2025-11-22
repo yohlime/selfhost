@@ -13,7 +13,7 @@ include:
   - vert-compose.yaml
   - dawarich-compose.yaml
   - yamtrack-compose.yaml
-  - authentik-compose.yaml
+  - pocketid-compose.yaml
 
 services:
   caddy:

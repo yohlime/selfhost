@@ -96,8 +96,8 @@ lw.{$DOMAIN} {
   reverse_proxy linkwarden:3000
 }
 
-authentik.{$DOMAIN} {
-  reverse_proxy authentik-server:9000
+pocketid.{$DOMAIN} {
+  reverse_proxy pocket-id:1411
 }
 
 status.{$DOMAIN} {

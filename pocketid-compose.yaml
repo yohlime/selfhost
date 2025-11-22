@@ -1,0 +1,22 @@
+services:
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v1
+    container_name: pocket_id
+    restart: unless-stopped
+    env_file:
+      - pocketid/.env
+      - .env
+    environment:
+      APP_URL: "https://pocketid.${DOMAIN}"
+      DB_CONNECTION_STRING: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/pocketid?sslmode=disable
+    networks:
+      - yohnet
+    volumes:
+      - "./pocketid/data:/app/data"
+    # Optional healthcheck
+    healthcheck:
+      test: ["CMD", "/app/pocket-id", "healthcheck"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
