@@ -20,3 +20,16 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
+    depends_on:
+      - mediaflow-proxy
+  mediaflow-proxy:
+    image: mhdzumair/mediaflow-proxy
+    container_name: mediaflow_proxy
+    restart: unless-stopped
+    networks:
+      - yohnet
+    ports:
+      - 18888:8888
+    env_file:
+      - aiostreams/.env.mediaflow
+      - .env
