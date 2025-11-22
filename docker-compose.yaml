@@ -5,7 +5,7 @@ include:
   - syncthing-compose.yaml
   - immich-compose.yaml
   - vaultwarden-compose.yaml
-  - linkwarden-compose.yaml
+  - karakeep-compose.yaml
   - matrix-compose.yaml
   - litellm-compose.yaml
   - open-webui-compose.yaml

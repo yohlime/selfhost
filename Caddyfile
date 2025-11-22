@@ -92,8 +92,8 @@ vw.{$DOMAIN} {
   }
 }
 
-lw.{$DOMAIN} {
-  reverse_proxy linkwarden:3000
+karakeep.{$DOMAIN} {
+  reverse_proxy karakeep:3000
 }
 
 pocketid.{$DOMAIN} {
