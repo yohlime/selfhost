@@ -35,6 +35,11 @@ model_list:
       api_key: os.environ/GROQ_API_KEY
       rpm: 1000
       tpm: 250000
+  - model_name: groq-whisper-large-v3-turbo
+    litellm_params:
+      model: groq/whisper-large-v3-turbo
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 400
   - model_name: claude-haiku
     litellm_params:
       model: anthropic/claude-haiku-4-5-20251001
@@ -46,3 +51,4 @@ model_list:
 
 general_settings:
   store_model_in_db: true
+  store_prompts_in_spend_logs: true

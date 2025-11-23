@@ -8,6 +8,9 @@ services:
         limits:
           cpus: "2"
           memory: 2G
+    env_file:
+      - open-webui/.env
+      - .env
     networks:
       - yohnet
     volumes:
