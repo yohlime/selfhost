@@ -8,6 +8,12 @@
   }
 }
 
+(tinyauth_forwarder) {
+  forward_auth tinyauth:3000 {
+    uri /api/auth/caddy
+  }
+}
+
 {
   acme_dns cloudflare {$CF_API_TOKEN}
 
@@ -18,8 +24,17 @@
     reverse_proxy homer:8080
 }
 
+auth.{$DOMAIN} {
+  reverse_proxy tinyauth:3000
+}
+
+pocketid.{$DOMAIN} {
+  reverse_proxy pocket-id:1411
+}
+
 pihole.{$DOMAIN} {
   reverse_proxy host.docker.internal:8080
+  import tinyauth_forwarder *
 }
 
 prometheus.{$DOMAIN} {
@@ -72,6 +87,7 @@ dawarich.{$DOMAIN} {
 
 chatai.{$DOMAIN} {
   reverse_proxy open-webui:8080
+  import tinyauth_forwarder *
 }
 
 litellm.{$DOMAIN} {
@@ -98,10 +114,6 @@ vw.{$DOMAIN} {
 
 karakeep.{$DOMAIN} {
   reverse_proxy karakeep:3000
-}
-
-pocketid.{$DOMAIN} {
-  reverse_proxy pocket-id:1411
 }
 
 status.{$DOMAIN} {

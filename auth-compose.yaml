@@ -20,3 +20,18 @@ services:
       timeout: 5s
       retries: 2
       start_period: 10s
+  tinyauth:
+    container_name: tinyauth
+    image: ghcr.io/steveiliop56/tinyauth:v4
+    restart: unless-stopped
+    env_file:
+      - tinyauth/.env
+      - .env
+    environment:
+      APP_URL: https://auth.${DOMAIN}
+    networks:
+      - yohnet
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - pocket-id

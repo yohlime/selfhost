@@ -15,6 +15,7 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+      - pocket-id
   matrix-turnify:
     image: ghcr.io/bpbradley/matrix-turnify:latest
     container_name: matrix-turnify
