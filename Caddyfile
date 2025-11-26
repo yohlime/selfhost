@@ -62,6 +62,10 @@ photos.{$DOMAIN} {
   reverse_proxy immich-server:2283 
 }
 
+budget.{$DOMAIN} {
+  reverse_proxy actual-budget:5006 
+}
+
 dawarich.{$DOMAIN} {
   reverse_proxy dawarich-app:3000
 }

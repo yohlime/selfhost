@@ -3,6 +3,7 @@ include:
   - ntfy-compose.yaml
   - monitor-compose.yaml
   - syncthing-compose.yaml
+  - actualbudget-compose.yaml
   - immich-compose.yaml
   - vaultwarden-compose.yaml
   - karakeep-compose.yaml
