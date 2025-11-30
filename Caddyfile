@@ -37,6 +37,10 @@ pihole.{$DOMAIN} {
   import tinyauth_forwarder *
 }
 
+couchdb.{$DOMAIN} {
+  reverse_proxy couchdb:5984
+}
+
 prometheus.{$DOMAIN} {
   reverse_proxy prometheus:9090
 }

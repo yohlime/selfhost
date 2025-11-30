@@ -5,6 +5,7 @@ include:
   - monitor-compose.yaml
   - syncthing-compose.yaml
   - actualbudget-compose.yaml
+  - couchdb-compose.yaml
   - immich-compose.yaml
   - vaultwarden-compose.yaml
   - karakeep-compose.yaml

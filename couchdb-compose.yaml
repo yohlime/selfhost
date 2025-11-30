@@ -1,0 +1,14 @@
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: couchdb
+    user: 1000:1000
+    env_file:
+      - couchdb/.env
+      - .env
+    volumes:
+      - ./couchdb/data:/opt/couchdb/data
+      - ./couchdb/etc:/opt/couchdb/etc/local.d
+    networks:
+      - yohnet
+    restart: unless-stopped
