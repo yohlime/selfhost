@@ -54,7 +54,7 @@ matrix.{$DOMAIN} {
   reverse_proxy /_synapse/client/* synapse:8008
 }
 
-notify.{$DOMAIN} {
+notify.{$DOMAIN}, http://notify.{$DOMAIN} {
   reverse_proxy ntfy:80
 
   # Redirect HTTP to HTTPS, but only for GET topic addresses, since we want
