@@ -85,6 +85,10 @@ budget.{$DOMAIN} {
   reverse_proxy actual-budget:5006 
 }
 
+folio.{$DOMAIN} {
+  reverse_proxy ghostfolio:3333
+}
+
 dawarich.{$DOMAIN} {
   reverse_proxy dawarich-app:3000
 }
