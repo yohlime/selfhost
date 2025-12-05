@@ -1,6 +1,7 @@
 include:
   - auth-compose.yaml
   - pihole-compose.yaml
+  - vikunja-compose.yaml
   - ntfy-compose.yaml
   - monitor-compose.yaml
   - syncthing-compose.yaml

@@ -77,6 +77,10 @@ sync.{$DOMAIN} {
   }
 }
 
+vikunja.{$DOMAIN} {
+  reverse_proxy vikunja:3456 
+}
+
 photos.{$DOMAIN} {
   reverse_proxy immich-server:2283 
 }
@@ -95,7 +99,6 @@ dawarich.{$DOMAIN} {
 
 chatai.{$DOMAIN} {
   reverse_proxy open-webui:8080
-  import tinyauth_forwarder *
 }
 
 litellm.{$DOMAIN} {
