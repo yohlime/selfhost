@@ -12,3 +12,9 @@ services:
     networks:
       - yohnet
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.couchdb.rule=Host(`couchdb.${DOMAIN}`)
+      - traefik.http.routers.couchdb.entrypoints=websecure
+      - traefik.http.routers.couchdb.tls.certresolver=letsencrypt
+      - traefik.http.services.couchdb.loadbalancer.server.port=5984

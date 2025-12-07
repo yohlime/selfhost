@@ -21,6 +21,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ghostfolio.rule=Host(`folio.${DOMAIN}`)
+      - traefik.http.routers.ghostfolio.entrypoints=websecure
+      - traefik.http.routers.ghostfolio.tls.certresolver=letsencrypt
+      - traefik.http.services.ghostfolio.loadbalancer.server.port=3333
 
   gf-redis:
     image: docker.io/library/redis:alpine

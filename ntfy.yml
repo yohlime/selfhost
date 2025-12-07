@@ -24,3 +24,9 @@ services:
     init: true # needed, if healthcheck is used. Prevents zombie processes
     networks:
       - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ntfy.rule=Host(`notify.${DOMAIN}`)
+      - traefik.http.routers.ntfy.entrypoints=websecure
+      - traefik.http.routers.ntfy.tls.certresolver=letsencrypt
+      - traefik.http.services.ntfy.loadbalancer.server.port=80

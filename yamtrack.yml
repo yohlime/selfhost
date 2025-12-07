@@ -10,7 +10,7 @@ services:
       - .env
     environment:
       SECRET: ${YAMTRACK_SECRET}
-      URLS: "https://yamtrack.home.yohli.me"
+      URLS: "https://yamtrack.${DOMAIN}"
       REDIS_URL: redis://yamtrack-redis:6379
       DB_HOST: postgres
       DB_NAME: yamtrack
@@ -19,6 +19,12 @@ services:
       DB_PORT: 5432
     networks:
       - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.yamtrack.rule=Host(`yamtrack.${DOMAIN}`)
+      - traefik.http.routers.yamtrack.entrypoints=websecure
+      - traefik.http.routers.yamtrack.tls.certresolver=letsencrypt
+      - traefik.http.services.yamtrack.loadbalancer.server.port=8000
 
   yamtrack-redis:
     container_name: yamtrack_redis

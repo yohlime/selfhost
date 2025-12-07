@@ -14,3 +14,9 @@ services:
     restart: unless-stopped
     networks:
       - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.vikunja.rule=Host(`vikunja.${DOMAIN}`)
+      - traefik.http.routers.vikunja.entrypoints=websecure
+      - traefik.http.routers.vikunja.tls.certresolver=letsencrypt
+      - traefik.http.services.vikunja.loadbalancer.server.port=3456

@@ -1,0 +1,13 @@
+services:
+  vert:
+    container_name: vert
+    image: ghcr.io/vert-sh/vert:latest
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.vert.rule=Host(`vert.${DOMAIN}`)
+      - traefik.http.routers.vert.entrypoints=websecure
+      - traefik.http.routers.vert.tls.certresolver=letsencrypt
+      - traefik.http.services.vert.loadbalancer.server.port=80

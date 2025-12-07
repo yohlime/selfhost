@@ -11,8 +11,13 @@ services:
     volumes:
       - ./st-sync:/var/syncthing
     ports:
-      - 8384:8384 # Web UI
       - 22000:22000/tcp # TCP file transfers
       - 22000:22000/udp # QUIC file transfers
       - 21027:21027/udp # Receive local discovery broadcasts
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.syncthing.rule=Host(`sync.${DOMAIN}`)
+      - traefik.http.routers.syncthing.entrypoints=websecure
+      - traefik.http.routers.syncthing.tls.certresolver=letsencrypt
+      - traefik.http.services.syncthing.loadbalancer.server.port=8324

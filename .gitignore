@@ -2,7 +2,6 @@
 
 !.gitignore
 !README.md
-!*-compose.yaml
-!caddy.Dockerfile
-!litellm/config.yaml
 !*.yml
+!litellm/config.yaml
+!traefik/traefik.yml

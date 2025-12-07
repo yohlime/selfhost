@@ -16,6 +16,14 @@ services:
     depends_on:
       - postgres
       - pocket-id
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.synapse.rule=Host(`matrix.${DOMAIN}`)
+      - "traefik.http.routers.synapse.rule=Host(`matrix.${DOMAIN}`) && (PathPrefix(`/_matrix`) || PathPrefix(`/_synapse/client`))"
+      - traefik.http.routers.synapse.entrypoints=websecure
+      - traefik.http.routers.synapse.tls.certresolver=letsencrypt
+      - traefik.http.services.synapse.loadbalancer.server.port=8008
+
   matrix-turnify:
     image: ghcr.io/bpbradley/matrix-turnify:latest
     container_name: matrix-turnify
@@ -32,6 +40,10 @@ services:
       - ALL
     depends_on:
       - synapse
+    labels:
+      - "traefik.http.routers.matrix-turnify.rule=Host(`matrix.${DOMAIN}`) && PathPrefix(`/_matrix/client/*/voip/turnServer`)"
+      - "traefik.http.services.matrix-turnify.loadbalancer.server.port=4499"
+
   mautrix-telegram:
     container_name: mautrix-telegram
     image: dock.mau.dev/mautrix/telegram:latest

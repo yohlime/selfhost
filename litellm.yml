@@ -15,3 +15,9 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/litellm?sslmode=disable
     command: --config /app/config.yaml
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.litellm.rule=Host(`litellm.${DOMAIN}`)
+      - traefik.http.routers.litellm.entrypoints=websecure
+      - traefik.http.routers.litellm.tls.certresolver=letsencrypt
+      - traefik.http.services.litellm.loadbalancer.server.port=4000

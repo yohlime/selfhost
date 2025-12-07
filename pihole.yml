@@ -1,0 +1,31 @@
+services:
+  pihole:
+    container_name: pihole
+    image: mpgirro/pihole-unbound:latest
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    hostname: pihole
+    # network_mode: "host"
+    networks:
+      - yohnet
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    env_file:
+      - pihole/.env
+      - .env
+    environment:
+      FTLCONF_dns_dnssec: "true"
+      FTLCONF_dns_listeningMode: "all"
+      VIRTUAL_HOST: "pihole.$DOMAIN"
+    volumes:
+      - ./pihole/pihole:/etc/pihole:rw
+      - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN}`)
+      - traefik.http.routers.pihole.entrypoints=websecure
+      - traefik.http.routers.pihole.tls.certresolver=letsencrypt
+      - traefik.http.services.pihole.loadbalancer.server.port=80

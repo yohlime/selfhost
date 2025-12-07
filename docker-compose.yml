@@ -1,0 +1,80 @@
+include:
+  - auth.yml
+  - pihole.yml
+  - vikunja.yml
+  - ntfy.yml
+  - syncthing.yml
+  - actualbudget.yml
+  - ghostfolio.yml
+  - couchdb.yml
+  - immich.yml
+  - vaultwarden.yml
+  - karakeep.yml
+  - matrix.yml
+  - litellm.yml
+  - open-webui.yml
+  - aiostreams.yml
+  - vert.yml
+  - dawarich.yml
+  - yamtrack.yml
+  - monitor.yml
+  - newt.yml
+
+services:
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/acme.json:/acme.json
+      - ./traefik/dynamic:/dynamic
+      - ./traefik/logs:/logs
+    env_file:
+      - traefik/.env
+      - .env
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.dashboard.entrypoints=websecure
+      - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.tls=true
+
+  homer:
+    image: b4bz/homer
+    container_name: homer
+    restart: unless-stopped
+    networks:
+      - yohnet
+    volumes:
+      - ./homer:/www/assets
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homer.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.homer.entrypoints=websecure
+      - traefik.http.routers.homer.tls.certresolver=letsencrypt
+      - traefik.http.services.homer.loadbalancer.server.port=8080
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - yohnet
+
+networks:
+  yohnet:
+    external: true

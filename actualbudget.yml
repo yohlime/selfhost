@@ -17,3 +17,9 @@ services:
       retries: 3
       start_period: 20s
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)
+      - traefik.http.routers.actual-budget.entrypoints=websecure
+      - traefik.http.routers.actual-budget.tls.certresolver=letsencrypt
+      - traefik.http.services.actual-budget.loadbalancer.server.port=5006

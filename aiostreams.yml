@@ -20,6 +20,13 @@ services:
       start_period: 10s
     depends_on:
       - mediaflow-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.aiostreams.rule=Host(`aiostreams.${DOMAIN}`)
+      - traefik.http.routers.aiostreams.entrypoints=websecure
+      - traefik.http.routers.aiostreams.tls.certresolver=letsencrypt
+      - traefik.http.services.aiostreams.loadbalancer.server.port=3000
+
   mediaflow-proxy:
     image: mhdzumair/mediaflow-proxy
     container_name: mediaflow_proxy
@@ -29,3 +36,9 @@ services:
     env_file:
       - aiostreams/.env.mediaflow
       - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mediaflow-proxy.rule=Host(`mediaflow-proxy.${DOMAIN}`)
+      - traefik.http.routers.mediaflow-proxy.entrypoints=websecure
+      - traefik.http.routers.mediaflow-proxy.tls.certresolver=letsencrypt
+      - traefik.http.services.mediaflow-proxy.loadbalancer.server.port=8888

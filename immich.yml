@@ -23,6 +23,12 @@ services:
       disable: false
     networks:
       - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.immich-server.rule=Host(`photos.${DOMAIN}`)
+      - traefik.http.routers.immich-server.entrypoints=websecure
+      - traefik.http.routers.immich-server.tls.certresolver=letsencrypt
+      - traefik.http.services.immich-server.loadbalancer.server.port=2283
 
   immich-machine-learning:
     container_name: immich_machine_learning

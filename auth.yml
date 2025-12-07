@@ -20,6 +20,14 @@ services:
       timeout: 5s
       retries: 2
       start_period: 10s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pocket-id.rule=Host(`pocketid.${DOMAIN}`)
+      - traefik.http.routers.pocket-id.entrypoints=websecure
+      - traefik.http.routers.pocket-id.tls.certresolver=letsencrypt
+      - traefik.http.services.pocket-id.loadbalancer.server.port=1411
+      - traefik.http.services.pocket-id.loadbalancer.server.scheme=http
+
   tinyauth:
     container_name: tinyauth
     image: ghcr.io/steveiliop56/tinyauth:v4
@@ -28,10 +36,16 @@ services:
       - tinyauth/.env
       - .env
     environment:
-      APP_URL: https://auth.${DOMAIN}
+      APP_URL: https://tinyauth.${DOMAIN}
     networks:
       - yohnet
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - pocket-id
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
+      - traefik.http.routers.tinyauth.entrypoints=websecure
+      - traefik.http.routers.tinyauth.tls.certresolver=letsencrypt
+      - traefik.http.services.tinyauth.loadbalancer.server.port=3000
