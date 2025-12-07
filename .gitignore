@@ -5,3 +5,4 @@
 !*-compose.yaml
 !caddy.Dockerfile
 !litellm/config.yaml
+!*.yml

@@ -18,6 +18,7 @@ include:
   - vert-compose.yaml
   - dawarich-compose.yaml
   - yamtrack-compose.yaml
+  - newt.yml
 
 services:
   caddy:

@@ -1,0 +1,12 @@
+services:
+  newt:
+    image: fosrl/newt
+    container_name: newt
+    restart: unless-stopped
+    env_file:
+      - newt/.env
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - yohnet
