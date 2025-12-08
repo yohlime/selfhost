@@ -17,6 +17,7 @@ include:
   - vert.yml
   - dawarich.yml
   - yamtrack.yml
+  - protonmail.yml
   - monitor.yml
   - newt.yml
 

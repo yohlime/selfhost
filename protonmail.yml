@@ -1,0 +1,13 @@
+services:
+  protonmail:
+    image: shenxn/protonmail-bridge
+    container_name: protonmail
+    restart: unless-stopped
+    volumes:
+      - ./protonmail:/root
+    hostname: protonmail.${DOMAIN}
+    networks:
+      - yohnet
+    ports:
+      - "1587:25/tcp"
+      - "1993:143/tcp"
