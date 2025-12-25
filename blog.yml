@@ -1,0 +1,20 @@
+services:
+  remark:
+    image: ghcr.io/umputun/remark42:latest
+    restart: always
+    container_name: "remark42"
+    env_file:
+      - remark42/.env
+      - .env
+    volumes:
+      - ./remark42/data:/srv/var # persistent volume to store all Remark42 data
+    ports:
+      - 8080:8080
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.remark42.rule=Host(`remark42.${DOMAIN}`)
+      - traefik.http.routers.remark42.entrypoints=websecure
+      - traefik.http.routers.remark42.tls.certresolver=letsencrypt
+      - traefik.http.services.remark42.loadbalancer.server.port=8080
