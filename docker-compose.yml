@@ -13,7 +13,6 @@ include:
   - matrix.yml
   - litellm.yml
   - open-webui.yml
-  - aiostreams.yml
   - vert.yml
   - dawarich.yml
   - yamtrack.yml
