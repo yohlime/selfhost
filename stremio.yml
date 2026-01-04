@@ -27,6 +27,43 @@ services:
       - traefik.http.routers.aiostreams.tls.certresolver=letsencrypt
       - traefik.http.services.aiostreams.loadbalancer.server.port=3000
 
+  aiometadata:
+    image: ghcr.io/cedya77/aiometadata:latest
+    container_name: aiometadata
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - aiometadata/.env
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.aiometadata.rule=Host(`aiometadata.${DOMAIN}`)
+      - traefik.http.routers.aiometadata.entrypoints=websecure
+      - traefik.http.routers.aiometadata.tls.certresolver=letsencrypt
+      - traefik.http.services.aiometadata.loadbalancer.server.port=3232
+    volumes:
+      - ./aiometadata/data:/app/addon/data
+    depends_on:
+      aiometadata_redis:
+        condition: service_healthy
+    tty: true
+
+  aiometadata_redis:
+    image: redis:latest
+    container_name: aiometadata_redis
+    restart: unless-stopped
+    networks:
+      - yohnet
+    volumes:
+      - ./aiometadata/cache:/data
+    command: redis-server --appendonly yes --save 60 1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   mediaflow-proxy:
     image: mhdzumair/mediaflow-proxy
     container_name: mediaflow_proxy
