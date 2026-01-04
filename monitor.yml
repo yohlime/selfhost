@@ -19,20 +19,24 @@ services:
 
   cadvisor:
     container_name: cadvisor
-    image: ghcr.io/google/cadvisor:v0.53.0
+    image: ghcr.io/google/cadvisor:latest
     privileged: true
+    command:
+      - --housekeeping_interval=10s
+      - --docker_only
+      - --store_container_labels=false
     networks:
       - yohnet
     env_file:
       - .env
     volumes:
-      - "/:/rootfs"
-      - "/var/run:/var/run"
-      - "/sys:/sys"
-      - "/var/lib/docker/:/var/lib/docker"
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
       - "/dev/disk/:/dev/disk"
     devices:
-      - "/dev/kmsg"
+      - "/dev/kmsg:/dev/kmsg"
 
   prometheus:
     image: prom/prometheus
