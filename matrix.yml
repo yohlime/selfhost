@@ -18,7 +18,6 @@ services:
       - pocket-id
     labels:
       - traefik.enable=true
-      - traefik.http.routers.synapse.rule=Host(`matrix.${DOMAIN}`)
       - "traefik.http.routers.synapse.rule=Host(`matrix.${DOMAIN}`) && (PathPrefix(`/_matrix`) || PathPrefix(`/_synapse/client`))"
       - traefik.http.routers.synapse.entrypoints=websecure
       - traefik.http.routers.synapse.tls.certresolver=letsencrypt
@@ -41,7 +40,11 @@ services:
     depends_on:
       - synapse
     labels:
+      - traefik.enable=true
       - "traefik.http.routers.matrix-turnify.rule=Host(`matrix.${DOMAIN}`) && PathPrefix(`/_matrix/client/*/voip/turnServer`)"
+      - traefik.http.routers.matrix-turnify.entrypoints=websecure
+      - traefik.http.routers.matrix-turnify.tls.certresolver=letsencrypt
+      - traefik.http.routers.matrix-turnify.priority=32
       - "traefik.http.services.matrix-turnify.loadbalancer.server.port=4499"
 
   mautrix-telegram:
@@ -56,6 +59,7 @@ services:
       - yohnet
     depends_on:
       - synapse
+
   mautrix-messenger:
     container_name: mautrix-messenger
     image: dock.mau.dev/mautrix/meta:latest
@@ -68,6 +72,7 @@ services:
       - yohnet
     depends_on:
       - synapse
+
   mautrix-instagram:
     container_name: mautrix-instagram
     image: dock.mau.dev/mautrix/meta:latest
@@ -80,6 +85,7 @@ services:
       - yohnet
     depends_on:
       - synapse
+
   mautrix-twitter:
     container_name: mautrix-twitter
     image: dock.mau.dev/mautrix/twitter:latest
@@ -90,6 +96,7 @@ services:
       - yohnet
     depends_on:
       - synapse
+
   mautrix-bluesky:
     container_name: mautrix-bluesky
     image: dock.mau.dev/mautrix/bluesky:latest
