@@ -1,3 +1,6 @@
+include:
+  - torrent-scraper.yml
+
 services:
   aiostreams:
     image: ghcr.io/viren070/aiostreams:latest

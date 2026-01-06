@@ -1,0 +1,51 @@
+services:
+  comet:
+    container_name: comet
+    image: g0ldyy/comet
+    restart: unless-stopped
+    networks:
+      - yohnet
+    environment:
+      DATABASE_TYPE: postgresql
+      DATABASE_URL: ${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/comet?sslmode=disable
+    env_file:
+      - comet/.env
+      - .env
+    volumes:
+      - ./comet/data:/data
+    depends_on:
+      - postgres
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.comet.rule=Host(`comet.${DOMAIN}`)
+      - traefik.http.routers.comet.entrypoints=websecure
+      - traefik.http.routers.comet.tls.certresolver=letsencrypt
+      - traefik.http.services.comet.loadbalancer.server.port=8000
+
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - .env
+    volumes:
+      - ./jackett/data:/config
+    depends_on:
+      - flaresolverr
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jackett.rule=Host(`jackett.${DOMAIN}`)
+      - traefik.http.routers.jackett.entrypoints=websecure
+      - traefik.http.routers.jackett.tls.certresolver=letsencrypt
+      - traefik.http.services.jackett.loadbalancer.server.port=9117
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - .env
