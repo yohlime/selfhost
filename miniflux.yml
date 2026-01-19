@@ -1,0 +1,20 @@
+services:
+  miniflux:
+    image: miniflux/miniflux:latest
+    container_name: miniflux
+    networks:
+      - yohnet
+    restart: unless-stopped
+    env_file:
+      - miniflux/.env
+      - .env
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/miniflux?sslmode=disable
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.miniflux.rule=Host(`miniflux.${DOMAIN}`)
+      - traefik.http.routers.miniflux.entrypoints=websecure
+      - traefik.http.routers.miniflux.tls.certresolver=letsencrypt
+      - traefik.http.services.miniflux.loadbalancer.server.port=8080

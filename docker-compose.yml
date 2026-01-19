@@ -10,6 +10,7 @@ include:
   - immich.yml
   - vaultwarden.yml
   - karakeep.yml
+  - miniflux.yml
   - matrix.yml
   - litellm.yml
   - open-webui.yml
