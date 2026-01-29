@@ -20,4 +20,4 @@ services:
       - traefik.http.routers.syncthing.rule=Host(`sync.${DOMAIN}`)
       - traefik.http.routers.syncthing.entrypoints=websecure
       - traefik.http.routers.syncthing.tls.certresolver=letsencrypt
-      - traefik.http.services.syncthing.loadbalancer.server.port=8324
+      - traefik.http.services.syncthing.loadbalancer.server.port=8384
