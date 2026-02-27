@@ -1,4 +1,10 @@
 model_list:
+  - model_name: gemini-flash-free
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/FREE_GEMINI_API_KEY
+      rpm: 5
+      tpm: 250000
   - model_name: gemini-flash
     litellm_params:
       model: gemini/gemini-2.5-flash
@@ -10,7 +16,13 @@ model_list:
       model: gemini/gemini-2.5-pro
       api_key: os.environ/GEMINI_API_KEY
       rpm: 150
-      tpm: 1000000
+      tpm: 2000000
+  - model_name: gemini-flash-image
+    litellm_params:
+      model: gemini/gemini-2.5-flash-image
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: image_generation
   - model_name: groq-llama-3.3-70B
     litellm_params:
       model: groq/llama-3.3-70b-versatile
@@ -52,3 +64,5 @@ model_list:
 general_settings:
   store_model_in_db: true
   store_prompts_in_spend_logs: true
+litellm_settings:
+  drop_params: true
