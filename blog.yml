@@ -8,8 +8,6 @@ services:
       - .env
     volumes:
       - ./remark42/data:/srv/var # persistent volume to store all Remark42 data
-    ports:
-      - 8080:8080
     networks:
       - yohnet
     labels:
