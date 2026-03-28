@@ -3,6 +3,7 @@ include:
   - pihole.yml
   - vikunja.yml
   - ntfy.yml
+  - sftpgo.yml
   - syncthing.yml
   - actualbudget.yml
   - ghostfolio.yml

@@ -1,0 +1,27 @@
+services:
+  sftpgo:
+    image: drakkan/sftpgo
+    container_name: sftpgo
+    env_file:
+      - sftpgo/.env
+      - .env
+    volumes:
+      - ./sftpgo/data:/srv/sftpgo/data
+      - ./sftpgo/config:/var/lib/sftpgo
+      - /run/media/yohlime/data/Fiction:/srv/sftpgo/data/calibre:ro
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webdav.rule=Host(`webdav.${DOMAIN}`)
+      - traefik.http.routers.webdav.entrypoints=websecure
+      - traefik.http.routers.webdav.tls.certresolver=letsencrypt
+      - traefik.http.routers.webdav.service=webdav
+      - traefik.http.services.webdav.loadbalancer.server.port=8090
+      # And the port to access the UI
+      - traefik.http.routers.sftpgo.rule=Host(`sftpgo.${DOMAIN}`)
+      - traefik.http.routers.sftpgo.entrypoints=websecure
+      - traefik.http.routers.sftpgo.tls.certresolver=letsencrypt
+      - traefik.http.routers.sftpgo.service=sftpgo
+      - traefik.http.services.sftpgo.loadbalancer.server.port=8080
