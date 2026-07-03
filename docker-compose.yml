@@ -21,6 +21,7 @@ include:
   - blog.yml
   - monitor.yml
   - newt.yml
+  - health.yml
 
 services:
   traefik:
