@@ -3,6 +3,8 @@ services:
     container_name: vert
     image: ghcr.io/vert-sh/vert:latest
     restart: unless-stopped
+    env_file:
+      - ./.env
     networks:
       - yohnet
     labels:
@@ -11,3 +13,45 @@ services:
       - traefik.http.routers.vert.entrypoints=websecure
       - traefik.http.routers.vert.tls.certresolver=letsencrypt
       - traefik.http.services.vert.loadbalancer.server.port=80
+
+  snap-otter:
+    image: snapotter/snapotter:latest
+    volumes:
+      - ./snapotter/data:/data
+      - ./snapotter/workspace:/tmp/workspace
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.snapotter.rule=Host(`snapotter.${DOMAIN}`)
+      - traefik.http.routers.snapotter.entrypoints=websecure
+      - traefik.http.routers.snapotter.tls.certresolver=letsencrypt
+      - traefik.http.services.snapotter.loadbalancer.server.port=1349
+
+  bentopdf:
+    image: ghcr.io/alam00000/bentopdf:latest
+    container_name: bentopdf
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bentopdf.rule=Host(`bentopdf.${DOMAIN}`)
+      - traefik.http.routers.bentopdf.entrypoints=websecure
+      - traefik.http.routers.bentopdf.tls.certresolver=letsencrypt
+      - traefik.http.services.bentopdf.loadbalancer.server.port=8080
