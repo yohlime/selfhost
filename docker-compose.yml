@@ -19,6 +19,7 @@ include:
   - vert.yml
   - dawarich.yml
   - yamtrack.yml
+  - health.yml
   - blog.yml
   - monitor.yml
   - newt.yml

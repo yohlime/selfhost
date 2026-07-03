@@ -1,0 +1,22 @@
+services:
+  endurain:
+    container_name: endurain-app
+    image: ghcr.io/endurain-project/endurain:latest
+    env_file:
+      - ./endurain/.env
+      - .env
+    volumes:
+      - ./endurain/backend/data:/app/backend/data
+      - ./endurain/backend/logs:/app/backend/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.endurain.rule=Host(`endurain.${DOMAIN}`)
+      - traefik.http.routers.endurain.entrypoints=websecure
+      - traefik.http.routers.endurain.tls.certresolver=letsencrypt
+      - traefik.http.services.endurain.loadbalancer.server.port=8080
