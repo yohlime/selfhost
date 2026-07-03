@@ -1,6 +1,6 @@
 services:
   newt:
-    image: fosrl/newt
+    image: fosrl/newt:1.12
     container_name: newt
     restart: unless-stopped
     env_file:
