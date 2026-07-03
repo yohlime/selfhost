@@ -1,0 +1,23 @@
+services:
+  mayberry:
+    build:
+      context: ./repos/mayberry-branch
+      dockerfile: Dockerfile
+    container_name: mayberry
+    command:
+      - --daemon
+      - -name
+      - libraryoh
+    restart: unless-stopped
+    environment:
+      MAYBERRY_LIBRARY: "/library"
+    volumes:
+      - ../../docs/books:/library
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mayberry.rule=Host(`mayberry.${DOMAIN}`)
+      - traefik.http.routers.mayberry.entrypoints=websecure
+      - traefik.http.routers.mayberry.tls.certresolver=letsencrypt
+      - traefik.http.services.mayberry.loadbalancer.server.port=1950

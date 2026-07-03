@@ -23,6 +23,8 @@ include:
   - blog.yml
   - monitor.yml
   - newt.yml
+  - arr.yml
+  - books.yml
 
 services:
   traefik:

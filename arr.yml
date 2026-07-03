@@ -1,0 +1,187 @@
+include:
+  - music.yml
+  - video.yml
+  - games.yml
+
+services:
+  comet:
+    container_name: comet
+    image: g0ldyy/comet
+    restart: unless-stopped
+    networks:
+      - yohnet
+    environment:
+      DATABASE_TYPE: postgresql
+      DATABASE_FORCE_IPV4_RESOLUTION: False
+      DATABASE_URL: ${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/comet?sslmode=disable
+    env_file:
+      - comet/.env
+      - .env
+    volumes:
+      - ./comet/data:/data
+    depends_on:
+      - postgres
+      - prowlarr
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.comet.rule=Host(`comet.${DOMAIN}`)
+      - traefik.http.routers.comet.entrypoints=websecure
+      - traefik.http.routers.comet.tls.certresolver=letsencrypt
+      - traefik.http.services.comet.loadbalancer.server.port=8000
+
+  # jackett:
+  #   image: linuxserver/jackett:latest
+  #   container_name: jackett
+  #   restart: unless-stopped
+  #   networks:
+  #     - yohnet
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - ./jackett/data:/config
+  #   depends_on:
+  #     - flaresolverr
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.jackett.rule=Host(`jackett.${DOMAIN}`)
+  #     - traefik.http.routers.jackett.entrypoints=websecure
+  #     - traefik.http.routers.jackett.tls.certresolver=letsencrypt
+  #     - traefik.http.services.jackett.loadbalancer.server.port=9117
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - .env
+
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 9696/tcp
+    restart: unless-stopped
+    volumes:
+      - ./prowlarr/config:/config
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
+      - traefik.http.routers.prowlarr.entrypoints=websecure
+      - traefik.http.routers.prowlarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.prowlarr.service=prowlarr
+      - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+
+  profilarr:
+    image: ghcr.io/dictionarry-hub/profilarr:latest
+    container_name: profilarr
+    volumes:
+      - ./profilarr/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - ORIGIN=https://profilarr.home.yohli.me
+      - PARSER_HOST=parser
+      - PARSER_PORT=5000
+    depends_on:
+      parser:
+        condition: service_healthy
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.profilarr.rule=Host(`profilarr.${DOMAIN}`)
+      - traefik.http.routers.profilarr.entrypoints=websecure
+      - traefik.http.routers.profilarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.profilarr.service=profilarr
+      - traefik.http.services.profilarr.loadbalancer.server.port=6868
+
+  parser:
+    image: ghcr.io/dictionarry-hub/profilarr-parser:latest
+    container_name: profilarr-parser
+    expose:
+      - "5000"
+    networks:
+      - yohnet
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./sabnzbd/config:/config
+      - /mnt/hdd01:/data
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)
+      - traefik.http.routers.sabnzbd.entrypoints=websecure
+      - traefik.http.routers.sabnzbd.tls.certresolver=letsencrypt
+      - traefik.http.routers.sabnzbd.service=sabnzbd
+      - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
+
+  qbittorrent:
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 8080/tcp
+      LIBTORRENT: v1
+    volumes:
+      - ./qbittorrent/config:/config
+      - /mnt/hdd01:/data
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN}`)
+      - traefik.http.routers.qbittorrent.entrypoints=websecure
+      - traefik.http.routers.qbittorrent.tls.certresolver=letsencrypt
+      - traefik.http.routers.qbittorrent.service=qbittorrent
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+
+  rdtclient:
+    image: rogerfar/rdtclient
+    container_name: rdtclient
+    env_file:
+      - ./.env
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./rdtclient/db:/data/db
+      - /mnt/hdd01/downloads:/data/downloads
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rdtclient.rule=Host(`rdtclient.${DOMAIN}`)
+      - traefik.http.routers.rdtclient.entrypoints=websecure
+      - traefik.http.routers.rdtclient.tls.certresolver=letsencrypt
+      - traefik.http.routers.rdtclient.service=rdtclient
+      - traefik.http.services.rdtclient.loadbalancer.server.port=6500

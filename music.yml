@@ -1,0 +1,149 @@
+services:
+  lidarr:
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 8686/tcp
+    restart: unless-stopped
+    volumes:
+      - ./lidarr/config:/config
+      - /mnt/hdd01:/data
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
+      - traefik.http.routers.lidarr.entrypoints=websecure
+      - traefik.http.routers.lidarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.lidarr.service=lidarr
+      - traefik.http.services.lidarr.loadbalancer.server.port=8686
+
+  soulsync:
+    container_name: soulsync
+    image: boulderbadgedad/soulsync:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      PYTHONPATH: /app
+    restart: unless-stopped
+    volumes:
+      - ./soulsync/config:/app/config
+      - ./soulsync/logs:/app/logs
+      - /mnt/hdd01/downloads:/app/downloads
+      - ./soulsync/Staging:/app/Staging
+      - /mnt/hdd01/music:/app/Transfer:rw
+      - ./soulsync/MusicVideos:/app/MusicVideos
+      - ./soulsync/scripts:/app/scripts
+      - ./soulsync/database:/app/data
+    networks:
+      - yohnet
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.soulsync.rule=Host(`soulsync.${DOMAIN}`)
+      - traefik.http.routers.soulsync.entrypoints=websecure
+      - traefik.http.routers.soulsync.tls.certresolver=letsencrypt
+      - traefik.http.routers.soulsync.service=soulsync
+      - traefik.http.services.soulsync.loadbalancer.server.port=8008
+
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd
+    user: 1000:1000
+    env_file:
+      - ./slskd/.env
+      - ./.env
+    environment:
+      - SLSKD_REMOTE_CONFIGURATION=true
+    volumes:
+      - ./slskd/data:/app
+      - /mnt/hdd01/downloads:/app/downloads
+      - /mnt/hdd01/music:/app/music
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.slskd.rule=Host(`slskd.${DOMAIN}`)
+      - traefik.http.routers.slskd.entrypoints=websecure
+      - traefik.http.routers.slskd.tls.certresolver=letsencrypt
+      - traefik.http.routers.slskd.service=slskd
+      - traefik.http.services.slskd.loadbalancer.server.port=5030
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000
+    restart: unless-stopped
+    env_file:
+      - ./navidrome/.env
+      - ./.env
+    volumes:
+      - ./navidrome/data:/data
+      - /mnt/hdd01/music:/music:ro
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.navidrome.rule=Host(`navidrome.${DOMAIN}`)
+      - traefik.http.routers.navidrome.entrypoints=websecure
+      - traefik.http.routers.navidrome.tls.certresolver=letsencrypt
+      - traefik.http.routers.navidrome.service=navidrome
+      - traefik.http.services.navidrome.loadbalancer.server.port=4533
+
+  # syncify:
+  #   image: thewicklowwolf/syncify:latest
+  #   container_name: syncify
+  #   volumes:
+  #     - ./syncify/config:/syncify/config
+  #     - ../../media/music/syncify:/syncify/downloads
+  #     - /etc/localtime:/etc/localtime:ro
+  #   environment:
+  #     - thread_limit=1
+  #     - crop_album_art=true
+  #   restart: unless-stopped
+  #   networks:
+  #     - yohnet
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.syncify.rule=Host(`syncify.${DOMAIN}`)
+  #     - traefik.http.routers.syncify.entrypoints=websecure
+  #     - traefik.http.routers.syncify.tls.certresolver=letsencrypt
+  #     - traefik.http.routers.syncify.service=syncify
+  #     - traefik.http.services.syncify.loadbalancer.server.port=5000
+
+  # lidify:
+  #   image: thewicklowwolf/lidify:latest
+  #   container_name: lidify
+  #   volumes:
+  #     - ./lidify/config:/lidify/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #   ports:
+  #     - 5000:5000
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./lidify/.env
+  #   networks:
+  #     - yohnet
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.lidify.rule=Host(`lidify.${DOMAIN}`)
+  #     - traefik.http.routers.lidify.entrypoints=websecure
+  #     - traefik.http.routers.lidify.tls.certresolver=letsencrypt
+  #     - traefik.http.routers.lidify.service=lidify
+  #     - traefik.http.services.lidify.loadbalancer.server.port=5000
