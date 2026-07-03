@@ -51,23 +51,6 @@ services:
       - traefik.http.routers.dashboard.service=api@internal
       - traefik.http.routers.dashboard.tls=true
 
-  homer:
-    image: b4bz/homer
-    container_name: homer
-    restart: unless-stopped
-    networks:
-      - yohnet
-    volumes:
-      - ./homer:/www/assets
-    env_file:
-      - .env
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.homer.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.homer.entrypoints=websecure
-      - traefik.http.routers.homer.tls.certresolver=letsencrypt
-      - traefik.http.services.homer.loadbalancer.server.port=8080
-
   postgres:
     image: postgres:16
     container_name: postgres
@@ -78,6 +61,11 @@ services:
       - ./postgres/data:/var/lib/postgresql/data
     networks:
       - yohnet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   yohnet:
