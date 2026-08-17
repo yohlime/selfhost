@@ -26,7 +26,7 @@ services:
       - traefik.http.services.karakeep.loadbalancer.server.port=3000
 
   chrome:
-    image: gcr.io/zenika-hub/alpine-chrome:124
+    image: ghcr.io/karakeep-app/karakeep-chrome:release
     container_name: chrome
     restart: unless-stopped
     networks:
@@ -39,8 +39,14 @@ services:
       - --remote-debugging-port=9222
       - --hide-scrollbars
   meilisearch:
-    image: getmeili/meilisearch:v1.13.3
+    image: getmeili/meilisearch:v1.41.0
     # command: ["meilisearch", "--experimental-dumpless-upgrade"]
+    # command:
+    #   [
+    #     "meilisearch",
+    #     "--import-dump",
+    #     "/meili_data/dumps/20260817-064232104.dump",
+    #   ]
     container_name: meilisearch
     restart: unless-stopped
     networks:
