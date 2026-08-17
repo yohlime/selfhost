@@ -84,7 +84,7 @@ services:
 
   mautrix-instagram:
     container_name: mautrix-instagram
-    image: dock.mau.dev/mautrix/meta:latest
+    image: dock.mau.dev/mautrix/meta:ig-latest
     restart: unless-stopped
     environment:
       UID: 1000
@@ -125,6 +125,22 @@ services:
       - .env
     volumes:
       - ./synapse/bridges/bluesky:/data
+    networks:
+      - yohnet
+    depends_on:
+      - synapse
+
+  mautrix-wa:
+    container_name: mautrix-wa
+    image: dock.mau.dev/mautrix/whatsapp:latest
+    restart: unless-stopped
+    environment:
+      UID: 1000
+      GID: 1000
+    env_file:
+      - .env
+    volumes:
+      - ./synapse/bridges/whatsapp:/data
     networks:
       - yohnet
     depends_on:
