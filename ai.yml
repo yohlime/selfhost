@@ -1,0 +1,16 @@
+include:
+  - litellm.yml
+
+# services:
+#   ollama:
+#     image: ollama/ollama:latest
+#     container_name: ollama
+#     restart: unless-stopped
+#     volumes:
+#       - ./ollama/data:/root/.ollama
+#     networks:
+#       - yohnet
+#     environment:
+#       OLLAMA_KEEP_ALIVE: 2m
+#       OLLAMA_MAX_LOADED_MODELS: 1
+#       OLLAMA_NUM_PARALLEL: 1
