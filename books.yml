@@ -1,0 +1,73 @@
+services:
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: calibre-web-automated
+    environment:
+      - PUID=1000
+      - PGID=1000
+    env_file:
+      - ./.env
+      - ./calibre/.env
+    volumes:
+      # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
+      - ./calibre/config:/config
+      # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
+      - ./calibre/ingest:/cwa-book-ingest
+      # If you don't have an existing library, CWA will automatically create one at the bind provided here
+      - ../../books:/calibre-library
+      # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
+      # If you are starting with a fresh install, you also need to copy customize.py.json to the Calibre config volume above, in /path/to/config/folder/.config/calibre/customize.py.json, see the note below for more info
+      - /home/yohlime/.config/calibre/plugins:/config/.config/calibre/plugins
+    # If you set CWA_PORT_OVERRIDE to a port below 1024, you may need to uncomment the following line:
+    # cap_add:
+    #   - NET_BIND_SERVICE
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.calibre.rule=Host(`calibre.${DOMAIN}`)
+      - traefik.http.routers.calibre.entrypoints=websecure
+      - traefik.http.routers.calibre.tls.certresolver=letsencrypt
+      - traefik.http.services.calibre.loadbalancer.server.port=8083
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    volumes:
+      - ./audiobookshelf/config:/config
+      - ./audiobookshelf/metadata:/metadata
+      - ../../audiobooks:/audiobooks
+      # - </path/to/podcasts>:/podcasts
+    restart: unless-stopped
+    user: 1000:1000
+    env_file:
+      - ./.env
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.abshelf.rule=Host(`audiobooks.${DOMAIN}`)
+      - traefik.http.routers.abshelf.entrypoints=websecure
+      - traefik.http.routers.abshelf.tls.certresolver=letsencrypt
+      - traefik.http.services.abshelf.loadbalancer.server.port=80
+
+  mayberry:
+    build:
+      context: ./repos/mayberry-branch
+      dockerfile: Dockerfile
+    container_name: mayberry
+    command: ["--daemon", "-name", "libraryoh"]
+    restart: unless-stopped
+    environment:
+      MAYBERRY_LIBRARY: "/library"
+    volumes:
+      - ../../books:/library
+      - ../../audiobooks:/audiobooks
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.mayberry.rule=Host(`mayberry.${DOMAIN}`)
+      - traefik.http.routers.mayberry.entrypoints=websecure
+      - traefik.http.routers.mayberry.tls.certresolver=letsencrypt
+      - traefik.http.services.mayberry.loadbalancer.server.port=1950

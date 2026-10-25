@@ -1,0 +1,24 @@
+include:
+  - audio-muse.yml
+
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000
+    restart: unless-stopped
+    env_file:
+      - ./navidrome/.env
+      - ./.env
+    volumes:
+      - ./navidrome/data:/data
+      - ../../music:/music:ro
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.navidrome.rule=Host(`navidrome.${DOMAIN}`)
+      - traefik.http.routers.navidrome.entrypoints=websecure
+      - traefik.http.routers.navidrome.tls.certresolver=letsencrypt
+      - traefik.http.routers.navidrome.service=navidrome
+      - traefik.http.services.navidrome.loadbalancer.server.port=4533
