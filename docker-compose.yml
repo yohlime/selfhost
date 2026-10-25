@@ -20,9 +20,8 @@ include:
   - blog.yml
   - monitor.yml
   - newt.yml
-  - tunnel.yml
   - arr.yml
-  - books.yml
+  - media.yml
 
 services:
   traefik:

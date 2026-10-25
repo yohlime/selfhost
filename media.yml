@@ -1,0 +1,5 @@
+include:
+  - music.yml
+  - video.yml
+  - books.yml
+  # - games.yml

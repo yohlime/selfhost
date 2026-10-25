@@ -1,0 +1,201 @@
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - yohnet
+    env_file:
+      - .env
+
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 9696/tcp
+    restart: unless-stopped
+    volumes:
+      - ./prowlarr/config:/config
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
+      - traefik.http.routers.prowlarr.entrypoints=websecure
+      - traefik.http.routers.prowlarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.prowlarr.service=prowlarr
+      - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+
+  profilarr:
+    image: ghcr.io/dictionarry-hub/profilarr:latest
+    container_name: profilarr
+    volumes:
+      - ./profilarr/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - ORIGIN=https://profilarr.home.yohli.me
+      - PARSER_HOST=parser
+      - PARSER_PORT=5000
+    depends_on:
+      parser:
+        condition: service_healthy
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.profilarr.rule=Host(`profilarr.${DOMAIN}`)
+      - traefik.http.routers.profilarr.entrypoints=websecure
+      - traefik.http.routers.profilarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.profilarr.service=profilarr
+      - traefik.http.services.profilarr.loadbalancer.server.port=6868
+
+  parser:
+    image: ghcr.io/dictionarry-hub/profilarr-parser:latest
+    container_name: profilarr-parser
+    expose:
+      - "5000"
+    networks:
+      - yohnet
+
+  radarr:
+    container_name: radarr
+    image: ghcr.io/hotio/radarr:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 7878/tcp
+    restart: unless-stopped
+    volumes:
+      - ./radarr/config:/config
+      - /mnt/media:/data
+    depends_on:
+      - qbit
+      - sabnzbd
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
+      - traefik.http.routers.radarr.entrypoints=websecure
+      - traefik.http.routers.radarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.radarr.service=radarr
+      - traefik.http.services.radarr.loadbalancer.server.port=7878
+
+  sonarr:
+    container_name: sonarr
+    image: ghcr.io/hotio/sonarr:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 8989/tcp
+    restart: unless-stopped
+    volumes:
+      - ./sonarr/config:/config
+      - /mnt/media:/data
+    depends_on:
+      - qbit
+      - sabnzbd
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
+      - traefik.http.routers.sonarr.entrypoints=websecure
+      - traefik.http.routers.sonarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.sonarr.service=sonarr
+      - traefik.http.services.sonarr.loadbalancer.server.port=8989
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    env_file:
+      - ./.env
+    environment:
+      - LOG_LEVEL=debug
+      - PORT=5055 #optional
+    volumes:
+      - ./seerr/config:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.seerr.rule=Host(`seerr.${DOMAIN}`)
+      - traefik.http.routers.seerr.entrypoints=websecure
+      - traefik.http.routers.seerr.tls.certresolver=letsencrypt
+      - traefik.http.routers.seerr.service=seerr
+      - traefik.http.services.seerr.loadbalancer.server.port=5055
+
+  lidarr:
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 8686/tcp
+    restart: unless-stopped
+    volumes:
+      - ./lidarr/config:/config
+      - ../..:/data2
+    depends_on:
+      - qbit
+      - sabnzbd
+      - slskd
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
+      - traefik.http.routers.lidarr.entrypoints=websecure
+      - traefik.http.routers.lidarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.lidarr.service=lidarr
+      - traefik.http.services.lidarr.loadbalancer.server.port=8686
+
+  bindery:
+    image: ghcr.io/vavallee/bindery:latest
+    container_name: bindery
+    user: 1000:1000
+    env_file:
+      - ./.env
+    environment:
+      BINDERY_LOG_LEVEL: info
+      BINDERY_PUID: 1000
+      BINDERY_PGID: 1000
+      BINDERY_LIBRARY_DIR: /data2/books
+      BINDERY_AUDIOBOOK_DIR: /data2/audiobooks
+      BINDERY_DOWNLOAD_DIR: /data2/downloads/books
+      BINDERY_AUDIOBOOK_DOWNLOAD_DIR: /data2/downloads/audiobooks
+    volumes:
+      - ./bindery/config:/config
+      - ../..:/data2
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bindery.rule=Host(`bindery.${DOMAIN}`)
+      - traefik.http.routers.bindery.entrypoints=websecure
+      - traefik.http.routers.bindery.tls.certresolver=letsencrypt
+      - traefik.http.services.bindery.loadbalancer.server.port=8787

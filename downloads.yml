@@ -1,0 +1,95 @@
+services:
+  qbit:
+    container_name: qbit
+    image: ghcr.io/hotio/qbittorrent
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      WEBUI_PORTS: 8080/tcp
+      LIBTORRENT: v1
+    volumes:
+      - ./qbit/config:/config
+      - /mnt/media:/data
+      - ../..:/data2
+    network_mode: service:gluetun-qbit
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./sabnzbd/config:/config
+      - /mnt/media:/data
+      - ../..:/data2
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)
+      - traefik.http.routers.sabnzbd.entrypoints=websecure
+      - traefik.http.routers.sabnzbd.tls.certresolver=letsencrypt
+      - traefik.http.routers.sabnzbd.service=sabnzbd
+      - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
+
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd
+    user: 1000:1000
+    env_file:
+      - ./slskd/.env
+      - ./.env
+    environment:
+      - SLSKD_REMOTE_CONFIGURATION=true
+    volumes:
+      - ./slskd/data:/app
+      - ../../music:/music:rw
+    restart: unless-stopped
+    depends_on:
+      - gluetun-slskd
+    network_mode: service:gluetun-slskd
+
+  soulsync:
+    container_name: soulsync
+    image: boulderbadgedad/soulsync:latest
+    env_file:
+      - ./.env
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      PYTHONPATH: /app
+    restart: unless-stopped
+    volumes:
+      - ./soulsync/config:/app/config
+      - ./soulsync/logs:/app/logs
+      - ../../downloads:/app/downloads
+      - ./soulsync/Staging:/app/Staging
+      - ../../music:/app/Transfer:rw
+      - ./soulsync/MusicVideos:/app/MusicVideos
+      - ./soulsync/scripts:/app/scripts
+      - ./soulsync/database:/app/data
+    networks:
+      - yohnet
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.soulsync.rule=Host(`soulsync.${DOMAIN}`)
+      - traefik.http.routers.soulsync.entrypoints=websecure
+      - traefik.http.routers.soulsync.tls.certresolver=letsencrypt
+      - traefik.http.routers.soulsync.service=soulsync
+      - traefik.http.services.soulsync.loadbalancer.server.port=8008
