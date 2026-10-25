@@ -12,16 +12,15 @@ include:
   - vaultwarden.yml
   - karakeep.yml
   - miniflux.yml
-  - matrix.yml
   - ai.yml
   - open-webui.yml
-  - stremio.yml
   - vert.yml
   - dawarich.yml
   - yamtrack.yml
   - blog.yml
   - monitor.yml
   - newt.yml
+  - tunnel.yml
   - arr.yml
   - books.yml
 

@@ -1,0 +1,62 @@
+services:
+  audiomuse-redis:
+    image: redis:7-alpine
+    container_name: audiomuse-redis
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Manila
+    volumes:
+      - ./audiomuse/redis:/data
+    networks:
+      - yohnet
+
+  audiomuse:
+    image: ghcr.io/neptunehub/audiomuse-ai:latest
+    container_name: audiomuse
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVICE_TYPE: flask
+      POSTGRES_DB: audiomuse
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://audiomuse-redis:6379/0
+      TEMP_DIR: /app/temp_audio
+    volumes:
+      - ./audiomuse/temp-flask:/app/temp_audio
+      - ./audiomuse/plugins-flask:/app/plugin/installed
+    depends_on:
+      - audiomuse-redis
+      - postgres
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.audiomuse.rule=Host(`audiomuse.${DOMAIN}`)
+      - traefik.http.routers.audiomuse.entrypoints=websecure
+      - traefik.http.routers.audiomuse.tls.certresolver=letsencrypt
+      - traefik.http.routers.audiomuse.service=audiomuse
+      - traefik.http.services.audiomuse.loadbalancer.server.port=8000
+
+  audiomuse-worker:
+    image: ghcr.io/neptunehub/audiomuse-ai:latest
+    container_name: audiomuse-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SERVICE_TYPE: worker
+      POSTGRES_DB: audiomuse
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://audiomuse-redis:6379/0
+      TEMP_DIR: /app/temp_audio
+    volumes:
+      - ./audiomuse/temp-worker:/app/temp_audio
+      - ./audiomuse/plugins-worker:/app/plugin/installed
+    depends_on:
+      - audiomuse-redis
+      - postgres
+    networks:
+      - yohnet

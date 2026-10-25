@@ -12,7 +12,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./radarr/config:/config
-      - /mnt/hdd01:/data
+      - /mnt/media:/data
+    depends_on:
+      - qbit
+      - sabnzbd
     networks:
       - yohnet
     labels:
@@ -36,7 +39,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./sonarr/config:/config
-      - /mnt/hdd01:/data
+      - /mnt/media:/data
+    depends_on:
+      - qbit
+      - sabnzbd
     networks:
       - yohnet
     labels:
@@ -46,6 +52,34 @@ services:
       - traefik.http.routers.sonarr.tls.certresolver=letsencrypt
       - traefik.http.routers.sonarr.service=sonarr
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
+
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    env_file:
+      - ./.env
+    environment:
+      - LOG_LEVEL=debug
+      - PORT=5055 #optional
+    volumes:
+      - ./seerr/config:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.seerr.rule=Host(`seerr.${DOMAIN}`)
+      - traefik.http.routers.seerr.entrypoints=websecure
+      - traefik.http.routers.seerr.tls.certresolver=letsencrypt
+      - traefik.http.routers.seerr.service=seerr
+      - traefik.http.services.seerr.loadbalancer.server.port=5055
 
   jellyfin:
     image: jellyfin/jellyfin
@@ -57,10 +91,12 @@ services:
       - "107" #render
       - "44" #video
     restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
     volumes:
       - ./jellyfin/config:/config
       - ./jellyfin/cache:/cache
-      - /mnt/hdd01:/stuff
+      - /mnt/media:/stuff
     networks:
       - yohnet
     labels:
