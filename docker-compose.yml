@@ -13,6 +13,7 @@ include:
   - karakeep.yml
   - miniflux.yml
   - ai.yml
+  - openclaw.yml
   - open-webui.yml
   - vert.yml
   - dawarich.yml
