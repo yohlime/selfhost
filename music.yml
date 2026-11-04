@@ -17,8 +17,12 @@ services:
       - yohnet
     labels:
       - traefik.enable=true
-      - traefik.http.routers.navidrome.rule=Host(`navidrome.${DOMAIN}`)
+      - traefik.http.routers.navidrome.rule=Host(`music.${DOMAIN}`)
       - traefik.http.routers.navidrome.entrypoints=websecure
       - traefik.http.routers.navidrome.tls.certresolver=letsencrypt
       - traefik.http.routers.navidrome.service=navidrome
+      - traefik.http.routers.navidrome-public.rule=Host(`music.${ZONE_NAME}`)
+      - traefik.http.routers.navidrome-public.entrypoints=websecure
+      - traefik.http.routers.navidrome-public.tls.certresolver=letsencrypt
+      - traefik.http.routers.navidrome-public.service=navidrome
       - traefik.http.services.navidrome.loadbalancer.server.port=4533

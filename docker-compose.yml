@@ -20,7 +20,7 @@ include:
   - yamtrack.yml
   - blog.yml
   - monitor.yml
-  - newt.yml
+  - cloudflared.yml
   - arr.yml
   - media.yml
 
@@ -50,6 +50,10 @@ services:
       - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
       - traefik.http.routers.dashboard.service=api@internal
       - traefik.http.routers.dashboard.tls=true
+      - traefik.http.routers.dashboard.middlewares=tinyauth@docker
+      - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
+      - traefik.http.middlewares.tinyauth.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name
 
   postgres:
     image: postgres:16
