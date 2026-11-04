@@ -1,4 +1,23 @@
 services:
+  portfolio:
+    build:
+      context: /home/yohlime/workdir/personal/portfolio
+    container_name: yohli.me
+    restart: unless-stopped
+    env_file:
+      - portfolio/.env
+      - .env
+    volumes:
+      - /home/yohlime/Documents/obsidian/blogs:/app/content/blogs
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portfolio.rule=Host(`${ZONE_NAME}`) || Host(`www.${ZONE_NAME}`)
+      - traefik.http.routers.portfolio.entrypoints=websecure
+      - traefik.http.routers.portfolio.tls.certresolver=letsencrypt
+      - traefik.http.services.portfolio.loadbalancer.server.port=4321
+
   remark:
     image: ghcr.io/umputun/remark42:latest
     restart: always
@@ -15,4 +34,8 @@ services:
       - traefik.http.routers.remark42.rule=Host(`remark42.${DOMAIN}`)
       - traefik.http.routers.remark42.entrypoints=websecure
       - traefik.http.routers.remark42.tls.certresolver=letsencrypt
+      - traefik.http.routers.remark42-public.rule=Host(`remark42.${ZONE_NAME}`)
+      - traefik.http.routers.remark42-public.entrypoints=websecure
+      - traefik.http.routers.remark42-public.tls.certresolver=letsencrypt
+      - traefik.http.routers.remark42-public.service=remark42
       - traefik.http.services.remark42.loadbalancer.server.port=8080
