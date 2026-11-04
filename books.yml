@@ -1,36 +1,4 @@
 services:
-  calibre-web-automated:
-    image: crocodilestick/calibre-web-automated:latest
-    container_name: calibre-web-automated
-    environment:
-      - PUID=1000
-      - PGID=1000
-    env_file:
-      - ./.env
-      - ./calibre/.env
-    volumes:
-      # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
-      - ./calibre/config:/config
-      # This is an ingest dir, NOT a library one. Anything added here will be automatically added to your library according to the settings you have configured in CWA Settings page. All files placed here are REMOVED AFTER PROCESSING
-      - ./calibre/ingest:/cwa-book-ingest
-      # If you don't have an existing library, CWA will automatically create one at the bind provided here
-      - ../../books:/calibre-library
-      # If you use calibre plugins, you can bind your plugins folder here to have CWA attempt to add them to its workflow (WIP)
-      # If you are starting with a fresh install, you also need to copy customize.py.json to the Calibre config volume above, in /path/to/config/folder/.config/calibre/customize.py.json, see the note below for more info
-      - /home/yohlime/.config/calibre/plugins:/config/.config/calibre/plugins
-    # If you set CWA_PORT_OVERRIDE to a port below 1024, you may need to uncomment the following line:
-    # cap_add:
-    #   - NET_BIND_SERVICE
-    restart: unless-stopped
-    networks:
-      - yohnet
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.calibre.rule=Host(`calibre.${DOMAIN}`)
-      - traefik.http.routers.calibre.entrypoints=websecure
-      - traefik.http.routers.calibre.tls.certresolver=letsencrypt
-      - traefik.http.services.calibre.loadbalancer.server.port=8083
-
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     volumes:
@@ -71,3 +39,69 @@ services:
       - traefik.http.routers.mayberry.entrypoints=websecure
       - traefik.http.routers.mayberry.tls.certresolver=letsencrypt
       - traefik.http.services.mayberry.loadbalancer.server.port=1950
+
+  bookorbit:
+    image: ghcr.io/bookorbit/bookorbit:latest
+    container_name: bookorbit
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ./bookorbit/.env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      LIBRARY_BROWSE_ROOT: /
+    depends_on:
+      bookorbit-db:
+        condition: service_healthy
+    volumes:
+      - ../../books:/books:rw
+      - ../../audiobooks:/audiobooks:rw
+      - ./bookorbit/data/app:/data
+      - ./bookorbit/imports:/imports:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bookorbit.rule=Host(`books.${DOMAIN}`)
+      - traefik.http.routers.bookorbit.entrypoints=websecure
+      - traefik.http.routers.bookorbit.tls.certresolver=letsencrypt
+      - traefik.http.routers.bookorbit-public.rule=Host(`books.${ZONE_NAME}`)
+      - traefik.http.routers.bookorbit-public.entrypoints=websecure
+      - traefik.http.routers.bookorbit-public.tls.certresolver=letsencrypt
+      - traefik.http.routers.bookorbit-public.service=bookorbit
+      - traefik.http.services.bookorbit.loadbalancer.server.port=3000
+
+  bookorbit-db:
+    image: pgvector/pgvector:pg18
+    container_name: bookorbit-db
+    restart: unless-stopped
+    env_file:
+      - ./bookorbit/.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./bookorbit/data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - yohnet
