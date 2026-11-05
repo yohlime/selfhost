@@ -14,6 +14,7 @@ include:
   - miniflux.yml
   - ai.yml
   - openclaw.yml
+  - longmemory.yml
   - open-webui.yml
   - vert.yml
   - dawarich.yml
