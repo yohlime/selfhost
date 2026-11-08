@@ -5,11 +5,16 @@ services:
     environment:
       HOME: /home/node
       TERM: xterm-256color
+      XDG_RUNTIME_DIR: /run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run
     volumes:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
       - ./openclaw/.config:/home/node/.config
       - /home/yohlime/Documents/obsidian:/home/node/obsidian
+      - /home/yohlime/.local/bin/obsidian:/usr/local/bin/obsidian:ro
+      - /home/yohlime/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:/home/node/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:ro
+      - /run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run:/run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run
+      - /home/yohlime/Documents/obsidian:/home/yohlime/Documents/obsidian:rw
     ports:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
       - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
@@ -45,9 +50,14 @@ services:
       HOME: /home/node
       TERM: xterm-256color
       BROWSER: echo
+      XDG_RUNTIME_DIR: /run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run
     volumes:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - /home/yohlime/.local/bin/obsidian:/usr/local/bin/obsidian:ro
+      - /home/yohlime/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:/home/node/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:ro
+      - /run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run:/run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run
+      - /home/yohlime/Documents/obsidian:/home/yohlime/Documents/obsidian:rw
     stdin_open: true
     tty: true
     init: true
