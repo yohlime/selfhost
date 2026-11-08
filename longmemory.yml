@@ -1,0 +1,21 @@
+services:
+  longmemory:
+    build:
+      context: https://github.com/CaviraOSS/LongMemory.git#8badf44d48d0d72a07e1ea3daf1ecbd76ae1a357
+    image: selfhost-longmemory:8badf44
+    container_name: longmemory
+    restart: unless-stopped
+    init: true
+    user: "1000:1000"
+    env_file:
+      - ./longmem/.env
+    volumes:
+      - ./longmemory/data:/data
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.longmemory.rule=Host(`longmem.${DOMAIN}`)
+      - traefik.http.routers.longmemory.entrypoints=websecure
+      - traefik.http.routers.longmemory.tls.certresolver=letsencrypt
+      - traefik.http.services.longmemory.loadbalancer.server.port=7331
