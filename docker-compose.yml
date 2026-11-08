@@ -56,6 +56,23 @@ services:
       - traefik.http.middlewares.tinyauth.forwardauth.trustForwardHeader=true
       - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name
 
+  dockhand:
+    image: fnsys/dockhand:latest
+    container_name: dockhand
+    restart: unless-stopped
+    networks:
+      - yohnet
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./dockhand/data:/app/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dockhand.rule=Host(`dockhand.${DOMAIN}`)
+      - traefik.http.routers.dockhand.entrypoints=websecure
+      - traefik.http.routers.dockhand.tls.certresolver=letsencrypt
+      - traefik.http.routers.dockhand.middlewares=tinyauth@docker
+      - traefik.http.services.dockhand.loadbalancer.server.port=3000
+
   postgres:
     image: postgres:16
     container_name: postgres
