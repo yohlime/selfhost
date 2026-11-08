@@ -1,5 +1,6 @@
 include:
   - litellm.yml
+  - open-webui.yml
 
 # services:
 #   ollama:
