@@ -8,8 +8,11 @@ services:
     volumes:
       - ./sftpgo/data:/srv/sftpgo/data
       - ./sftpgo/config:/var/lib/sftpgo
-      - /run/media/yohlime/data/Fiction:/srv/sftpgo/data/calibre:ro
+      - ../../docs/books:/srv/sftpgo/data/books:ro
+      - /mnt/media/:/srv/sftpgo/stuff:ro
     restart: unless-stopped
+    ports:
+      - "${SFTPGO_SFTP_BIND_IP:-127.0.0.1}:2022:2022"
     networks:
       - yohnet
     labels:
