@@ -1,24 +1,4 @@
 services:
-  audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:latest
-    volumes:
-      - ./audiobookshelf/config:/config
-      - ./audiobookshelf/metadata:/metadata
-      - ../../audiobooks:/audiobooks
-      # - </path/to/podcasts>:/podcasts
-    restart: unless-stopped
-    user: 1000:1000
-    env_file:
-      - ./.env
-    networks:
-      - yohnet
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.abshelf.rule=Host(`audiobooks.${DOMAIN}`)
-      - traefik.http.routers.abshelf.entrypoints=websecure
-      - traefik.http.routers.abshelf.tls.certresolver=letsencrypt
-      - traefik.http.services.abshelf.loadbalancer.server.port=80
-
   mayberry:
     build:
       context: ./repos/mayberry-branch

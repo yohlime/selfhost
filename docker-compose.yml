@@ -20,7 +20,6 @@ include:
   - blog.yml
   - monitor.yml
   - cloudflared.yml
-  - arr.yml
   - media.yml
 
 services:
