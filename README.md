@@ -53,8 +53,7 @@ URLs follow the `Host(<sub>.${DOMAIN})` label in each file.
 | Yamtrack | `yamtrack.${DOMAIN}` | `yamtrack.yml` | media tracker |
 | Remark42 | `remark42.${DOMAIN}` | `blog.yml` | comment engine |
 | Uptime Kuma | `status.${DOMAIN}` | `monitor.yml` | uptime monitoring |
-| Prometheus | `prometheus.${DOMAIN}` | `monitor.yml` | metrics |
-| Grafana | `grafana.${DOMAIN}` | `monitor.yml` | dashboards |
+| Beszel | `beszel.${DOMAIN}` | `monitor.yml` | server and container metrics |
 
 ## Getting started
 

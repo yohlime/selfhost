@@ -17,70 +17,37 @@ services:
       - traefik.http.routers.uptime-kuma.tls.certresolver=letsencrypt
       - traefik.http.services.uptime-kuma.loadbalancer.server.port=3001
 
-  cadvisor:
-    container_name: cadvisor
-    image: ghcr.io/google/cadvisor:latest
-    privileged: true
-    command:
-      - --housekeeping_interval=10s
-      - --docker_only
-      - --store_container_labels=false
-    networks:
-      - yohnet
-    env_file:
-      - .env
-    volumes:
-      - "/:/rootfs:ro"
-      - "/var/run:/var/run:rw"
-      - "/sys:/sys:ro"
-      - "/var/lib/docker/:/var/lib/docker:ro"
-      - "/dev/disk/:/dev/disk"
-    devices:
-      - "/dev/kmsg:/dev/kmsg"
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    restart: always
-    networks:
-      - yohnet
-    extra_hosts:
-      - host.docker.internal:10.0.0.1
-    env_file:
-      - .env
-    volumes:
-      - ./prometheus/etc:/etc/prometheus
-      - ./prometheus/data:/prometheus
-    depends_on:
-      - cadvisor
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)
-      - traefik.http.routers.prometheus.entrypoints=websecure
-      - traefik.http.routers.prometheus.tls.certresolver=letsencrypt
-      - traefik.http.services.prometheus.loadbalancer.server.port=9090
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 2G
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
     restart: unless-stopped
-    user: "1000:1000"
-    env_file:
-      - .env
+    environment:
+      APP_URL: https://beszel.${DOMAIN}
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - ./beszel/data:/beszel_data
+      - ./beszel/socket:/beszel_socket
     networks:
       - yohnet
-    volumes:
-      - ./grafana/data:/var/lib/grafana
-    depends_on:
-      - prometheus
     labels:
       - traefik.enable=true
-      - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)
-      - traefik.http.routers.grafana.entrypoints=websecure
-      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
-      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.beszel.rule=Host(`beszel.${DOMAIN}`)
+      - traefik.http.routers.beszel.entrypoints=websecure
+      - traefik.http.routers.beszel.tls.certresolver=letsencrypt
+      - traefik.http.services.beszel.loadbalancer.server.port=8090
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./beszel/agent-data:/var/lib/beszel-agent
+      - ./beszel/socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      HUB_URL: http://127.0.0.1:8090
+    env_file:
+      - ./beszel/agent.env
