@@ -16,9 +16,9 @@ Personal self-hosted stack. Everything runs as Docker Compose services behind
   `traefik.${DOMAIN}`.
 - **Networking.** Every service joins the **external** `yohnet` network; it must
   exist on the host or `docker compose up` fails.
-- **Remote access.** Cloudflare A/AAAA records for `home.<zone>` and
-  `*.home.<zone>` point at this host's Tailscale IPs. `newt` is the
-  [Pangolin](https://pangolin.net/) tunnel client for public/external access.
+- **Remote access.** Public hostnames are routed through Cloudflare Tunnel
+  (`cloudflared`) to the internal Traefik entrypoint. `*.home.<zone>` records
+  remain Tailscale-only.
 - **Auth.** [Pocket ID](https://pocket-id.org/) is the OIDC provider and
   [Tinyauth](https://github.com/steveiliop56/tinyauth) serves as the forward-auth
   gate for protected apps.
@@ -55,7 +55,6 @@ URLs follow the `Host(<sub>.${DOMAIN})` label in each file.
 | Uptime Kuma | `status.${DOMAIN}` | `monitor.yml` | uptime monitoring |
 | Prometheus | `prometheus.${DOMAIN}` | `monitor.yml` | metrics |
 | Grafana | `grafana.${DOMAIN}` | `monitor.yml` | dashboards |
-| Newt | — | `newt.yml` | Pangolin tunnel client |
 
 ## Getting started
 
