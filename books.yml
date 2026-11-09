@@ -24,11 +24,13 @@ services:
       context: ./repos/mayberry-branch
       dockerfile: Dockerfile
     container_name: mayberry
-    command: ["--daemon", "-name", "libraryoh"]
+    command: ["--daemon"]
     restart: unless-stopped
     environment:
       MAYBERRY_LIBRARY: "/library"
+      HOME: "/config"
     volumes:
+      - ./mayberry/config:/config/.mayberry
       - ../../books:/library
       - ../../audiobooks:/audiobooks
     networks:
