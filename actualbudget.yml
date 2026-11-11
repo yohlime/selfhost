@@ -6,7 +6,6 @@ services:
       - yohnet
     env_file:
       - actualbudget/.env
-      - .env
     volumes:
       - ./actualbudget/data:/data
     healthcheck:

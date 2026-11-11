@@ -7,9 +7,8 @@ services:
       - postgres
       - yamtrack-redis
     env_file:
-      - .env
+      - yamtrack/.env
     environment:
-      SECRET: ${YAMTRACK_SECRET}
       URLS: "https://yamtrack.${DOMAIN}"
       REDIS_URL: redis://yamtrack-redis:6379
       DB_HOST: postgres

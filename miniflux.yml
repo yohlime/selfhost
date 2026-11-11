@@ -7,7 +7,6 @@ services:
     restart: unless-stopped
     env_file:
       - miniflux/.env
-      - .env
     depends_on:
       - postgres
     environment:

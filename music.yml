@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     env_file:
       - ./navidrome/.env
-      - ./.env
     volumes:
       - ./navidrome/data:/data
       - ../../music:/music:ro

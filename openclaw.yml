@@ -34,7 +34,6 @@ services:
       - yohnet
     env_file:
       - openclaw/.env
-      - .env
     labels:
       - traefik.enable=true
       - traefik.http.routers.openclaw.rule=Host(`openclaw.${DOMAIN}`)
@@ -66,4 +65,3 @@ services:
       - yohnet
     env_file:
       - openclaw/.env
-      - .env

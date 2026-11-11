@@ -4,7 +4,6 @@ services:
     container_name: vikunja
     env_file:
       - vikunja/.env
-      - .env
     volumes:
       - ./vikunja/files:/app/vikunja/files
       - ./vikunja/config.yml:/etc/vikunja/config.yml

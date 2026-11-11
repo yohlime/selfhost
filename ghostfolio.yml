@@ -10,7 +10,6 @@ services:
       - no-new-privileges:true
     env_file:
       - ghostfolio/.env
-      - .env
     networks:
       - yohnet
     depends_on:
@@ -39,7 +38,6 @@ services:
       - no-new-privileges:true
     env_file:
       - ghostfolio/.env
-      - .env
     command:
       - /bin/sh
       - -c

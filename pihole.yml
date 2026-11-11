@@ -14,14 +14,15 @@ services:
       - "53:53/udp"
     env_file:
       - pihole/.env
-      - .env
     environment:
       FTLCONF_dns_dnssec: "true"
       FTLCONF_dns_listeningMode: "all"
+      # FTLCONF_misc_etc_dnsmasq_d: "true"
       VIRTUAL_HOST: "pihole.$DOMAIN"
     volumes:
       - ./pihole/pihole:/etc/pihole:rw
       - ./pihole/dnsmasq.d:/etc/dnsmasq.d:rw
+      - ./pihole/unbound/unbound.conf.d/observatory.conf:/etc/unbound/unbound.conf.d/observatory.conf:r
     restart: unless-stopped
     labels:
       - traefik.enable=true

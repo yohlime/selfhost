@@ -9,7 +9,6 @@ services:
       - ./karakeep/data:/data
     env_file:
       - karakeep/.env
-      - .env
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -47,7 +46,6 @@ services:
       - yohnet
     env_file:
       - meilisearch/.env
-      - .env
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:

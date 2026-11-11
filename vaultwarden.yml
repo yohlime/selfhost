@@ -6,7 +6,6 @@ services:
       - postgres
     env_file:
       - vaultwarden/.env
-      - .env
     environment:
       DOMAIN: ${VW_DOMAIN}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/vaultwarden?sslmode=disable
