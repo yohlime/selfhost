@@ -1,6 +1,6 @@
 services:
   audiomuse-redis:
-    image: redis:7-alpine
+    image: ${REDIS_IMAGE:-redis:8-alpine}
     container_name: audiomuse-redis
     restart: unless-stopped
     environment:

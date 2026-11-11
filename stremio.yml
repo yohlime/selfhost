@@ -48,7 +48,7 @@ services:
     tty: true
 
   aiometadata_redis:
-    image: redis:latest
+    image: ${REDIS_IMAGE:-redis:8-alpine}
     container_name: aiometadata_redis
     restart: unless-stopped
     networks:
