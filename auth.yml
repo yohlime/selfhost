@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     env_file:
       - pocketid/.env
-      - .env
     environment:
       APP_URL: "https://pocketid.${DOMAIN}"
       DB_CONNECTION_STRING: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/pocketid?sslmode=disable
@@ -34,7 +33,6 @@ services:
     restart: unless-stopped
     env_file:
       - tinyauth/.env
-      - .env
     environment:
       APP_URL: https://auth.${DOMAIN}
     networks:

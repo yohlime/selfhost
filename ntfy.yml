@@ -6,7 +6,6 @@ services:
       - serve
     env_file:
       - ntfy/.env
-      - .env
     volumes:
       - ./ntfy/cache:/var/cache/ntfy
       - ./ntfy/etc:/etc/ntfy

@@ -28,10 +28,10 @@ services:
       # - ./postgresql.conf:/etc/postgresql/postgresql.conf # Optional, uncomment if you want to use a custom config
     networks:
       - yohnet
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: dawarich_development
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     restart: always
     healthcheck:
       test:
@@ -58,7 +58,6 @@ services:
     restart: on-failure
     env_file:
       - ./dawarich/.env
-      - .env
     environment:
       RAILS_ENV: development
       REDIS_URL: redis://dawarich-redis:6379
@@ -121,7 +120,6 @@ services:
     restart: on-failure
     env_file:
       - ./dawarich/.env
-      - .env
     environment:
       RAILS_ENV: development
       REDIS_URL: redis://dawarich-redis:6379

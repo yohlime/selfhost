@@ -3,21 +3,20 @@ services:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
     restart: unless-stopped
+    environment:
+      TZ: ${TZ}
     networks:
       - yohnet
-    env_file:
-      - .env
 
   prowlarr:
     container_name: prowlarr
     image: ghcr.io/hotio/prowlarr
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       WEBUI_PORTS: 9696/tcp
+      TZ: ${TZ}
     restart: unless-stopped
     volumes:
       - ./prowlarr/config:/config
@@ -66,13 +65,12 @@ services:
   radarr:
     container_name: radarr
     image: ghcr.io/hotio/radarr:latest
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       WEBUI_PORTS: 7878/tcp
+      TZ: ${TZ}
     restart: unless-stopped
     volumes:
       - ./radarr/config:/config
@@ -93,13 +91,12 @@ services:
   sonarr:
     container_name: sonarr
     image: ghcr.io/hotio/sonarr:latest
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       WEBUI_PORTS: 8989/tcp
+      TZ: ${TZ}
     restart: unless-stopped
     volumes:
       - ./sonarr/config:/config
@@ -121,11 +118,10 @@ services:
     image: ghcr.io/seerr-team/seerr:latest
     init: true
     container_name: seerr
-    env_file:
-      - ./.env
     environment:
       - LOG_LEVEL=debug
       - PORT=5055 #optional
+      - TZ=${TZ}
     volumes:
       - ./seerr/config:/app/config
     healthcheck:
@@ -148,13 +144,12 @@ services:
   lidarr:
     container_name: lidarr
     image: ghcr.io/hotio/lidarr:latest
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       WEBUI_PORTS: 8686/tcp
+      TZ: ${TZ}
     restart: unless-stopped
     volumes:
       - ./lidarr/config:/config

@@ -72,12 +72,17 @@ Deployment is manual on the host — there is no CI or build step.
 
 ## Configuration & secrets
 
-No `.env.example` is committed; `.env` files are untracked.
+The root `.env` is for Compose interpolation and genuinely shared values.
+Container secrets belong in per-service `.env` files and should not be injected
+into every container with `env_file: .env`.
 
-- **Root `.env`** supplies shared values: `DOMAIN`, `POSTGRES_USER`,
-  `POSTGRES_PASSWORD`, `CF_API_EMAIL` + Cloudflare token, and provider API keys.
-- **Per-service `./<service>/.env`** files are merged in alongside the root
-  `.env` via `env_file` (e.g. `pocketid/`, `immich/`, `synapse/`, `litellm/`).
+- **Root `.env`** supplies `DOMAIN`, `ZONE_NAME`, `TZ`, shared PostgreSQL
+  settings, image versions, Immich/OpenClaw paths and ports, and ingress values.
+  Copy `.env.example` to `.env` and replace the placeholders.
+- **Per-service `./<service>/.env`** files supply container configuration and
+  secrets (for example `dawarich/`, `ghostfolio/`, `immich/`, `openclaw/`,
+  `traefik/`). Compose interpolation cannot read these files; use root `.env`
+  for `${...}` values.
 - **`litellm/config.yaml`** defines the model list (`store_model_in_db: true`).
 - **`traefik/traefik.yml`** is the static Traefik config; dynamic config,
   `acme.json`, and logs live under `traefik/` but are untracked.
@@ -102,9 +107,9 @@ No `.env.example` is committed; `.env` files are untracked.
    label is required for Traefik to route to the container.
 
 > **.gitignore caveat:** the repo ignores `*` and tracks only `README.md`,
-> `*.yml`, `litellm/config.yaml`, and `traefik/traefik.yml`. Any new non-`.yml`
-> file (including `.yaml` or shell scripts) stays untracked until you add an
-> explicit `!path` rule.
+> `.env.example`, `*.yml`, `litellm/config.yaml`, and `traefik/traefik.yml`.
+> Any new non-`.yml` file (including `.yaml` or shell scripts) stays untracked
+> until you add an explicit `!path` rule.
 
 ## DNS
 

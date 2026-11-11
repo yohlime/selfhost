@@ -7,7 +7,6 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
-      - .env
       - ./gluetun-qbit/.env
     volumes:
       - ./gluetun-qbit/data:/gluetun
@@ -30,7 +29,6 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     env_file:
-      - .env
       - ./gluetun-slskd/.env
     volumes:
       - ./gluetun-slskd/data:/gluetun

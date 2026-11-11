@@ -4,7 +4,7 @@ services:
     container_name: audiomuse-redis
     restart: unless-stopped
     environment:
-      TZ: Asia/Manila
+      TZ: ${TZ}
     volumes:
       - ./audiomuse/redis:/data
     networks:
@@ -14,11 +14,12 @@ services:
     image: ghcr.io/neptunehub/audiomuse-ai:latest
     container_name: audiomuse
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
+      TZ: ${TZ}
       SERVICE_TYPE: flask
       POSTGRES_DB: audiomuse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       REDIS_URL: redis://audiomuse-redis:6379/0
@@ -43,11 +44,12 @@ services:
     image: ghcr.io/neptunehub/audiomuse-ai:latest
     container_name: audiomuse-worker
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
+      TZ: ${TZ}
       SERVICE_TYPE: worker
       POSTGRES_DB: audiomuse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       REDIS_URL: redis://audiomuse-redis:6379/0

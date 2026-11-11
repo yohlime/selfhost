@@ -4,7 +4,6 @@ services:
     container_name: sftpgo
     env_file:
       - sftpgo/.env
-      - .env
     volumes:
       - ./sftpgo/data:/srv/sftpgo/data
       - ./sftpgo/config:/var/lib/sftpgo

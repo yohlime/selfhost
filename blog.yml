@@ -6,7 +6,6 @@ services:
     restart: unless-stopped
     env_file:
       - portfolio/.env
-      - .env
     volumes:
       - /home/yohlime/Documents/obsidian/blogs:/app/content/blogs
     networks:
@@ -24,7 +23,6 @@ services:
     container_name: "remark42"
     env_file:
       - remark42/.env
-      - .env
     volumes:
       - ./remark42/data:/srv/var # persistent volume to store all Remark42 data
     networks:

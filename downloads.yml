@@ -2,14 +2,13 @@ services:
   qbit:
     container_name: qbit
     image: ghcr.io/hotio/qbittorrent
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       WEBUI_PORTS: 8080/tcp
       LIBTORRENT: v1
+      TZ: ${TZ}
     volumes:
       - ./qbit/config:/config
       - /mnt/media:/data
@@ -19,11 +18,10 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
+      TZ: ${TZ}
     volumes:
       - ./sabnzbd/config:/config
       - /mnt/media:/data
@@ -45,7 +43,6 @@ services:
     user: 1000:1000
     env_file:
       - ./slskd/.env
-      - ./.env
     environment:
       - SLSKD_REMOTE_CONFIGURATION=true
     volumes:
@@ -59,13 +56,12 @@ services:
   soulsync:
     container_name: soulsync
     image: boulderbadgedad/soulsync:latest
-    env_file:
-      - ./.env
     environment:
       PUID: 1000
       PGID: 1000
       UMASK: 002
       PYTHONPATH: /app
+      TZ: ${TZ}
     restart: unless-stopped
     volumes:
       - ./soulsync/config:/app/config

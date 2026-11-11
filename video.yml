@@ -2,13 +2,13 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
-    env_file:
-      - ./.env
     user: 1000:1000
     group_add:
       - "107" #render
       - "44" #video
     restart: unless-stopped
+    environment:
+      TZ: ${TZ}
     devices:
       - /dev/dri:/dev/dri
     volumes:
