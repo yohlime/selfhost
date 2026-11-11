@@ -28,7 +28,7 @@ services:
 
   yamtrack-redis:
     container_name: yamtrack_redis
-    image: redis:7-alpine
+    image: ${REDIS_IMAGE:-redis:8-alpine}
     restart: unless-stopped
     volumes:
       - yamtrack_redis:/data

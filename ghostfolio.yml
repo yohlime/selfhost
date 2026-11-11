@@ -29,7 +29,7 @@ services:
       - traefik.http.services.ghostfolio.loadbalancer.server.port=3333
 
   gf-redis:
-    image: docker.io/library/redis:alpine
+    image: ${REDIS_IMAGE:-redis:8-alpine}
     container_name: gf-redis
     restart: unless-stopped
     user: "999:1000"
