@@ -15,6 +15,7 @@ services:
     env_file:
       - pihole/.env
     environment:
+      FTLCONF_webserver_domain: "pihole.${DOMAIN}"
       FTLCONF_dns_dnssec: "true"
       FTLCONF_dns_listeningMode: "all"
       # FTLCONF_misc_etc_dnsmasq_d: "true"
