@@ -13,6 +13,7 @@ include:
   - karakeep.yml
   - miniflux.yml
   - openclaw.yml
+  - garmin.yml
   - longmemory.yml
   - vert.yml
   - dawarich.yml

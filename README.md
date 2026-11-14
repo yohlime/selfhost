@@ -57,6 +57,20 @@ URLs follow the `Host(<sub>.${DOMAIN})` label in each file.
 | Grafana | `grafana.${DOMAIN}` | `monitor.yml` | dashboards |
 | Newt | — | `newt.yml` | Pangolin tunnel client |
 
+## OpenClaw integrations
+
+`garmin.yml` runs the Garmin MCP server only on `yohnet`; it is not exposed by
+Traefik. Authenticate once before relying on it:
+
+```bash
+docker compose run --rm -it --entrypoint garmin-mcp-auth garmin-mcp
+docker compose up -d garmin-mcp
+```
+
+Tokens are stored in the `garmin-tokens` volume. `GARMIN_TOOL_PROFILE=all`
+exposes all 155 Garmin tools, including health, activities, workouts, nutrition,
+and write/delete operations.
+
 ## Getting started
 
 Prerequisites: Docker Engine with Compose v2.20+, the external network, and the
