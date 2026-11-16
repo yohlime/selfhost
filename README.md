@@ -69,6 +69,11 @@ Tokens are stored in the `garmin-tokens` volume. `GARMIN_TOOL_PROFILE=all`
 exposes all 155 Garmin tools, including health, activities, workouts, nutrition,
 and write/delete operations.
 
+`google-health` runs as a stdio MCP server inside the OpenClaw container. Its
+OAuth config and tokens live in the ignored `google-health/` directory, mounted
+at `/home/node/.google-health-mcp`. It uses the read-only `full` Google Health
+scope set and the `structured` privacy mode.
+
 ## Getting started
 
 Prerequisites: Docker Engine with Compose v2.20+, the external network, and the

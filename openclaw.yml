@@ -10,6 +10,7 @@ services:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
       - ./openclaw/.config:/home/node/.config
+      - ./google-health:/home/node/.google-health-mcp
       - /home/yohlime/Documents/obsidian:/home/node/obsidian
       - /home/yohlime/.local/bin/obsidian:/usr/local/bin/obsidian:ro
       - /home/yohlime/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:/home/node/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:ro
@@ -53,6 +54,7 @@ services:
     volumes:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - ./google-health:/home/node/.google-health-mcp
       - /home/yohlime/.local/bin/obsidian:/usr/local/bin/obsidian:ro
       - /home/yohlime/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:/home/node/.var/app/md.obsidian.Obsidian/config/obsidian/obsidian.json:ro
       - /run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run:/run/user/1000/.flatpak/md.obsidian.Obsidian/xdg-run
