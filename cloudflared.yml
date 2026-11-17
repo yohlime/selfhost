@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     profiles: ["tunnel"]
     environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+      TUNNEL_TOKEN: ${CF_TUNNEL_TOKEN:-}
     command: tunnel --no-autoupdate run
     networks:
       - yohnet
