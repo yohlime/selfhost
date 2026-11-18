@@ -1,25 +1,29 @@
 services:
-  questarr:
-    image: ghcr.io/doezer/questarr:latest
-    container_name: questarr
-    volumes:
-      - ./questarr/data:/app/data
-      - /mnt/hdd01/downloads:/app/downloads
-    env_file:
-      - ./questarr/.env
-      - ./.env
-    environment:
-      PUID: 1000
-      PGID: 1000
-      UMASK: 002
-      SQLITE_DB_PATH: /app/data/db/questarr.sqlite
+  romm:
+    image: rommapp/romm:5.4.1
+    container_name: romm
     restart: unless-stopped
+    init: true
+    env_file:
+      - ./romm/.env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ./romm/resources:/romm/resources
+      - ./romm/redis-data:/redis-data
+      - ${ROMM_LIBRARY_PATH}:/romm/library
+      - ./romm/assets:/romm/assets
+      - ./romm/config:/romm/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
     networks:
       - yohnet
     labels:
       - traefik.enable=true
-      - traefik.http.routers.questarr.rule=Host(`questarr.${DOMAIN}`)
-      - traefik.http.routers.questarr.entrypoints=websecure
-      - traefik.http.routers.questarr.tls.certresolver=letsencrypt
-      - traefik.http.routers.questarr.service=questarr
-      - traefik.http.services.questarr.loadbalancer.server.port=5000
+      - traefik.http.routers.romm.rule=Host(`romm.${DOMAIN}`)
+      - traefik.http.routers.romm.entrypoints=websecure
+      - traefik.http.routers.romm.tls.certresolver=letsencrypt
+      - traefik.http.routers.romm.service=romm
+      - traefik.http.services.romm.loadbalancer.server.port=8080

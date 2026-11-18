@@ -168,3 +168,28 @@ services:
       - traefik.http.routers.lidarr.service=lidarr
       - traefik.http.services.lidarr.loadbalancer.server.port=8686
 
+  questarr:
+    image: ghcr.io/doezer/questarr:latest
+    container_name: questarr
+    volumes:
+      - ./questarr/data:/app/data
+      - /mnt/hdd01/downloads:/app/downloads
+      - ${ROMM_LIBRARY_PATH}:/roms
+    env_file:
+      - ./questarr/.env
+    environment:
+      TZ: ${TZ}
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      SQLITE_DB_PATH: /app/data/db/questarr.sqlite
+    restart: unless-stopped
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.questarr.rule=Host(`questarr.${DOMAIN}`)
+      - traefik.http.routers.questarr.entrypoints=websecure
+      - traefik.http.routers.questarr.tls.certresolver=letsencrypt
+      - traefik.http.routers.questarr.service=questarr
+      - traefik.http.services.questarr.loadbalancer.server.port=5000
