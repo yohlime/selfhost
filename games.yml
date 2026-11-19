@@ -1,0 +1,29 @@
+services:
+  romm:
+    image: rommapp/romm:5.4.1
+    container_name: romm
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ./romm/.env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ./romm/resources:/romm/resources
+      - ./romm/redis-data:/redis-data
+      - ${ROMM_LIBRARY_PATH}:/romm/library
+      - ./romm/assets:/romm/assets
+      - ./romm/config:/romm/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    networks:
+      - yohnet
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.romm.rule=Host(`romm.${DOMAIN}`)
+      - traefik.http.routers.romm.entrypoints=websecure
+      - traefik.http.routers.romm.tls.certresolver=letsencrypt
+      - traefik.http.routers.romm.service=romm
+      - traefik.http.services.romm.loadbalancer.server.port=8080

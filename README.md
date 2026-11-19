@@ -51,6 +51,7 @@ URLs follow the `Host(<sub>.${DOMAIN})` label in each file.
 | BentoPDF | `bentopdf.${DOMAIN}` | `vert.yml` | PDF toolkit |
 | Dawarich | `dawarich.${DOMAIN}` | `dawarich.yml` | location history |
 | Yamtrack | `yamtrack.${DOMAIN}` | `yamtrack.yml` | media tracker |
+| RomM | `romm.${DOMAIN}` | `games.yml` | ROM library manager |
 | Remark42 | `remark42.${DOMAIN}` | `blog.yml` | comment engine |
 | Uptime Kuma | `status.${DOMAIN}` | `monitor.yml` | uptime monitoring |
 | Prometheus | `prometheus.${DOMAIN}` | `monitor.yml` | metrics |
